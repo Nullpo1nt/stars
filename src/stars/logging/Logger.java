@@ -2,12 +2,12 @@ package stars.logging;
 
 import java.util.ArrayList;
 
-public class Logger implements Runnable {
+public class Logger {
     public final static String TARGETLOG_NONE = "test"; 
     private static Logger _instance = null;
 
     private LogEntry _le = new LogEntry();
-    private ArrayList _loggers = new ArrayList();
+    private ArrayList<ILogger> _loggers = new ArrayList<ILogger>();
     
     
     private Logger() { }
@@ -21,19 +21,19 @@ public class Logger implements Runnable {
         return _instance;
     }
     
-    public synchronized void addLogger(LoggerI loggerPane) {
+    public synchronized void addLogger(ILogger loggerPane) {
         _loggers.add(loggerPane);
     }
     
-    public synchronized void removeLogger(LoggerI loggerPane) {
+    public synchronized void removeLogger(ILogger loggerPane) {
         _loggers.remove(loggerPane);
     }
     
     public synchronized void log(String msg, String targetLib) {
         _le._setNewMessage(msg, targetLib);
         
-        for(int x = 0; x < _loggers.size(); x++) {
-            LoggerI p = (LoggerI)_loggers.get(x);
+        for (int x = 0; x < _loggers.size(); x++) {
+            ILogger p = (ILogger)_loggers.get(x);
             
             if (p != null) {
                 p.log(_le);
@@ -47,9 +47,5 @@ public class Logger implements Runnable {
     
     public void log(Throwable t, String targetLib) {
         log(t.getMessage(), targetLib);
-    }
-    
-    public void run() {
-        
     }
 }

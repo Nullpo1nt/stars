@@ -1,9 +1,9 @@
 package stars.ui;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import javax.swing.JPanel;
-
 
 /**
  * 
@@ -11,9 +11,10 @@ import javax.swing.JPanel;
  * @author Bryant Martin
  *
  */
+@SuppressWarnings("serial")
 public class PaintSurface extends JPanel {
-    protected ArrayList _items = new ArrayList();
-    protected double _scale = 1,
+    protected ArrayList<IDrawable> _items = new ArrayList<IDrawable>();
+    protected double _scale = 0.015,
                      _xOffset = 0,
                      _yOffset = 0;
 
@@ -24,7 +25,7 @@ public class PaintSurface extends JPanel {
      * 
      * @param item
      */
-    public void addItem(DrawableI item) {
+    public void addItem(IDrawable item) {
         _items.add(item);
     }
     
@@ -40,9 +41,14 @@ public class PaintSurface extends JPanel {
      * All components of the surface using the provided 
      * graphics object.
      */
-    protected void paintComponent(Graphics g) {
-        for(int x = 0; x < _items.size(); x++) {
-            ((DrawableI)_items.get(x)).draw(g, _scale);
+    protected void paintComponent(Graphics graphics) {
+    	Graphics2D g = (Graphics2D) graphics;
+    	
+    	g.scale(_scale, _scale);
+    	
+        for (int x = 0; x < _items.size(); x++) {
+            //(_items.get(x)).draw(g, _scale);
+        	(_items.get(x)).draw(g);
         }
     }
 }

@@ -6,13 +6,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
-import stars.logging.LoggerI;
+import stars.logging.ILogger;
 import stars.logging.LogEntry;
 import stars.logging.Logger;
 
-public class FileLogger implements LoggerI {
+public class FileLogger implements ILogger {
     protected String _newline; 
-    protected Hashtable _outputBuffers = new Hashtable();
+    protected Hashtable<String, BufferedWriter> _outputBuffers = new Hashtable<String, BufferedWriter>();
     protected File _outputDirectory;
     protected boolean _append = true;
     
@@ -29,11 +29,11 @@ public class FileLogger implements LoggerI {
     
     
     public void setOutputDirectory(File outputDirectory) {
-        if(!outputDirectory.exists()) {
+        if (!outputDirectory.exists()) {
             outputDirectory.mkdirs();
         }
         
-        if(!outputDirectory.isDirectory()) {
+        if (!outputDirectory.isDirectory()) {
             outputDirectory = outputDirectory.getParentFile();
         }
         
@@ -41,10 +41,10 @@ public class FileLogger implements LoggerI {
     }
     
     
-    protected BufferedWriter _getBuffer(String bufferName) {
+    protected BufferedWriter getBuffer(String bufferName) {
         BufferedWriter buffer = (BufferedWriter)_outputBuffers.get(bufferName);
         
-        if(buffer == null) {
+        if (buffer == null) {
             //Logger.getInstance().log("Testing", "");
             System.out.println("Creating buffer for " + bufferName);
             try {
@@ -68,12 +68,12 @@ public class FileLogger implements LoggerI {
     public void close() {
         Logger.getInstance().removeLogger(this);
         
-        Iterator i = _outputBuffers.values().iterator();
+        Iterator<BufferedWriter> i = _outputBuffers.values().iterator();
         
-        while(i.hasNext()) {
-            BufferedWriter buffer = (BufferedWriter) i.next();
+        while (i.hasNext()) {
+            BufferedWriter buffer = i.next();
             
-            if(buffer != null) {
+            if (buffer != null) {
                 try {
                     buffer.close();
                 } catch (IOException ex) {
@@ -87,9 +87,9 @@ public class FileLogger implements LoggerI {
     }
     
     public void log(LogEntry logEntry) {
-        BufferedWriter out = _getBuffer(logEntry.getTargetLog());
+        BufferedWriter out = getBuffer(logEntry.getTargetLog());
         
-        if(out != null) {
+        if (out != null) {
             try {
                 out.write(logEntry.toString() + _newline);
                 out.flush();
