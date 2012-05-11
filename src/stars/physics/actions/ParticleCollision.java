@@ -4,7 +4,6 @@ import java.util.AbstractList;
 
 import stars.physics.IAction;
 import stars.physics.IParticle;
-import stars.physics.Vector1x3;
 
 public class ParticleCollision implements IAction {
 	public void execute(double step, AbstractList<IParticle> c) {

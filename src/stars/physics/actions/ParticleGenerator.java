@@ -6,11 +6,11 @@ import stars.physics.IAction;
 import stars.physics.IParticle;
 
 public class ParticleGenerator implements IAction {
-    private Class _aClass;
+    private Class<? extends IParticle> _aClass;
     private int _maxParticles;
     private int _maxGenerationRate;
 
-    public ParticleGenerator(Class particleClass, int maxParticles, int maxRate) {
+    public ParticleGenerator(Class<? extends IParticle> particleClass, int maxParticles, int maxRate) {
         _aClass = particleClass;
         _maxParticles = maxParticles;
         _maxGenerationRate = maxRate;

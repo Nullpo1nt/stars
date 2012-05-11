@@ -1,9 +1,9 @@
 package stars.physics.actions;
 
 import java.util.AbstractList;
+
 import stars.physics.IAction;
 import stars.physics.IParticle;
-import stars.physics.Universe;
 import stars.physics.Vector1x3;
 
 public class Attraction implements IAction {
