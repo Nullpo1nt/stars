@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 import javax.swing.JPanel;
 import stars.DrawableParticle;
-import stars.physics.IAction;
-import stars.physics.IParticle;
 import stars.physics.Universe;
 import stars.physics.actions.*;
 import stars.physics.particles.*;
@@ -29,7 +27,7 @@ public class DrawableUniverse extends Universe implements ActionListener {
     Gravity g;
 
     public DrawableUniverse(JPanel panel) {
-        super(new Vector<IParticle>(), new Vector<IAction>());
+        super(new Vector<IParticleOld>(), new Vector<IActionOld>());
         g = new Gravity();
 
 //        addParticle(new Blackhole(1e21));

@@ -5,8 +5,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 import java.util.LinkedList;
-import stars.physics.IParticle;
 import stars.physics.Vector1x3;
+import stars.physics.particles.IParticleOld;
 
 public class DrawableParticle {
     boolean _drawTail = false,
@@ -14,13 +14,13 @@ public class DrawableParticle {
     		_drawAccel = false,
     		_drawRadius = false;
     int _maxTailSize = 100;
-    IParticle particle;
+    IParticleOld particle;
 
     LinkedList<Vector1x3> tail = new LinkedList<Vector1x3>();
 
     public DrawableParticle() {  }
 
-    public void draw(Graphics g, double scale, IParticle p) {
+    public void draw(Graphics g, double scale, IParticleOld p) {
         particle = p;
 		
         draw((Graphics2D)g);

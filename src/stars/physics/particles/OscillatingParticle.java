@@ -2,7 +2,6 @@ package stars.physics.particles;
 
 import java.util.AbstractList;
 
-import stars.physics.IParticle;
 import stars.physics.Vector1x3;
 
 public class OscillatingParticle extends NewtonParticle {
@@ -14,7 +13,7 @@ public class OscillatingParticle extends NewtonParticle {
         position.set(v);
     }
     
-    public void update(double seconds, AbstractList<IParticle> c) {
+    public void update(double seconds, AbstractList<IParticleOld> c) {
         time += seconds;
         position.x = orgPosition.x + (Math.sin(time/1000) * 5000);
         position.y += 1 * seconds;

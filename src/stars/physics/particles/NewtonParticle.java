@@ -1,10 +1,9 @@
 package stars.physics.particles;
 
 import java.util.AbstractList;
-import stars.physics.IParticle;
 import stars.physics.Vector1x3;
 
-public class NewtonParticle implements IParticle {
+public class NewtonParticle implements IParticleOld {
     public static final double G = 6.67e-11;
     
     private Vector1x3 tAccel = new Vector1x3(),
@@ -37,18 +36,7 @@ public class NewtonParticle implements IParticle {
     public double getRadius() { return radius; }
     public double getElastisity() { return elastisity; }
 
-/*
-    public void setPosition(double x, double y, double z) { }
-    public void setPosition(Vector3 v) { }
-    public void setVelocity(double x, double y, double z) { }
-    public void setVelocity(Vector3 v) { }
-    public void setAcceleration(double x, double y, double z) { }
-    public void setAcceleration(Vector3 v) { }
-    public void setForce(double x, double y, double z) { }
-    public void setForce(Vector3 v) { }
-*/
-
-    public void update(double d, AbstractList<IParticle> c) {
+    public void update(double d, AbstractList<IParticleOld> c) {
     	// Update Acceleration
     	// Calculate instantaneous accel from force
     	tAccel.set(force);
@@ -78,7 +66,7 @@ public class NewtonParticle implements IParticle {
      * @param p
      * @return
      */
-    public double timeToCollision(IParticle p) {
+    public double timeToCollision(IParticleOld p) {
 //    	final Vector1x3 relVel = new Vector1x3();
 //    	final Vector1x3 relPos = new Vector1x3();
 //

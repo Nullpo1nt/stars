@@ -1,7 +1,6 @@
 package stars.physics.particles;
 
 import java.util.AbstractList;
-import stars.physics.IParticle;
 import stars.physics.Vector1x3;
 
 public class PlanetParticle extends NewtonParticle {
@@ -11,7 +10,7 @@ public class PlanetParticle extends NewtonParticle {
     /**
      * F = G * (m1 * m2) / d^2
      */
-    protected Vector1x3 calculateForce(IParticle p) {
+    protected Vector1x3 calculateForce(IParticleOld p) {
         Vector1x3 pPosition = p.getPosition();
         Vector1x3 distanceV = getPosition().getDistanceVector(pPosition, _distanceVector);
         Vector1x3 unitV = distanceV.getUnitVector(_unitVector);
@@ -29,11 +28,11 @@ public class PlanetParticle extends NewtonParticle {
      * @param listOfStars
      * @param pos
      */
-    protected void calculateForce(AbstractList<IParticle> c) {
+    protected void calculateForce(AbstractList<IParticleOld> c) {
         Vector1x3 tempForce = new Vector1x3();
 
         for (int i = 0; i < c.size(); i++) {
-            IParticle p = c.get(i);
+            IParticleOld p = c.get(i);
 
             if (p != this) {
                 if (p.getMass() > 0) {
@@ -68,7 +67,7 @@ public class PlanetParticle extends NewtonParticle {
         position.add(tempVelocity);
     }
     
-    public void update(double timeDelta, AbstractList<IParticle> c) {
+    public void update(double timeDelta, AbstractList<IParticleOld> c) {
         calculateForce(c);
         calculateAcceleration();
         calculateVelocity(timeDelta);

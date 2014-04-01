@@ -1,9 +1,11 @@
-package stars.physics;
+package stars.physics.particles;
 
 import java.util.AbstractList;
 
-public interface IParticle {
-    public void update(double timeDelta, AbstractList<IParticle> c);
+import stars.physics.Vector1x3;
+
+public interface IParticleOld {
+    public void update(double timeDelta, AbstractList<IParticleOld> c);
     
     public void addForce(Vector1x3 v);
     
@@ -18,6 +20,7 @@ public interface IParticle {
     public Vector1x3 getVelocity();
     public Vector1x3 getAcceleration();
     public Vector1x3 getForce();
+
     public double getMass();
     public double getRadius();
     public double getElastisity();

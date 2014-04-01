@@ -2,66 +2,66 @@ package stars.physics.actions;
 
 import java.util.AbstractList;
 
-import stars.physics.IAction;
-import stars.physics.IParticle;
 import stars.physics.Universe;
 import stars.physics.Vector1x3;
+import stars.physics.particles.IParticleOld;
 
-public class BounceBoundryEliptical implements IAction {
-	double radius;
+public class BounceBoundryEliptical implements IActionOld {
+    double radius;
 
-	public BounceBoundryEliptical(Universe universe, double boundryOffset) {
-		radius = universe.getBoundRadius();// + boundryOffset;
-	}
+    public BounceBoundryEliptical(Universe universe, double boundryOffset) {
+        radius = universe.getBoundRadius();// + boundryOffset;
+    }
 
-	public double timeToCollision(IParticle p) {
-		Vector1x3 pos = p.getPosition();
-		Vector1x3 vel = p.getVelocity();
-		
-		// Particle distance from radius
-		double dis = radius - pos.getMagnitude();
+    public double timeToCollision(IParticleOld p) {
+        Vector1x3 pos = p.getPosition();
+        Vector1x3 vel = p.getVelocity();
 
-		//  Calc time to intercept
-		double t = dis / vel.getMagnitude();
+        // Particle distance from radius
+        double dis = radius - pos.getMagnitude();
 
-		return t;
-	}
-	
-	public void execute(double step, AbstractList<IParticle> c) {
-		for(int i = 0; i < c.size(); i++) {
-			IParticle p = c.get(i);
-			Vector1x3 position = p.getPosition();
-			
-			double tt = timeToCollision(p);
+        // Calc time to intercept
+        double t = dis / vel.getMagnitude();
 
-			if (tt < step) {
-				Vector1x3 velocity = p.getVelocity();				
-				
-				// uR = uV + 2uNorm
-				Vector1x3 uv = velocity.getUnitVector();
+        return t;
+    }
 
-				// 2 uNorm
-				Vector1x3 up = position.getUnitVector();
-				up.scale(-2.0d);
+    @Override
+    public void execute(double step, AbstractList<IParticleOld> c) {
+        for (int i = 0; i < c.size(); i++) {
+            IParticleOld p = c.get(i);
+            Vector1x3 position = p.getPosition();
 
-				uv.add(up);
-				uv.getUnitVector(up);
-				up.scale(velocity.getMagnitude());
+            double tt = timeToCollision(p);
 
-				velocity.set(up);
-				
-				double bounceEfficiency = p.getElastisity();
-				velocity.scale(bounceEfficiency);
+            if (tt < step) {
+                Vector1x3 velocity = p.getVelocity();
 
-				position.x += velocity.x * step;
-				position.y += velocity.y * step;
-				position.z += velocity.z * step;
-				
-				if (timeToCollision(p) < step) {
-					velocity.set(0, 0, 0);
-				}
-			}
-		}
-	}
+                // uR = uV + 2uNorm
+                Vector1x3 uv = velocity.getUnitVector();
+
+                // 2 uNorm
+                Vector1x3 up = position.getUnitVector();
+                up.scale(-2.0d);
+
+                uv.add(up);
+                uv.getUnitVector(up);
+                up.scale(velocity.getMagnitude());
+
+                velocity.set(up);
+
+                double bounceEfficiency = p.getElastisity();
+                velocity.scale(bounceEfficiency);
+
+                position.x += velocity.x * step;
+                position.y += velocity.y * step;
+                position.z += velocity.z * step;
+
+                if (timeToCollision(p) < step) {
+                    velocity.set(0, 0, 0);
+                }
+            }
+        }
+    }
 
 }
