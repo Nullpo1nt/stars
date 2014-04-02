@@ -1,25 +1,29 @@
 package stars.physics.particles;
 
 import stars.physics.Vector1x3;
-import stars.physics.actions.IAction;
+import stars.physics.actions.IForce;
 import stars.physics.actions.NewtonianGravity;
 
 public class TestParticle implements IParticle {
+    private boolean _destroy = false;
+
     private Vector1x3 _position;
     private Vector1x3 _velocity;
     private double _mass;
 
-    private IAction[] _actors;
+    private IForce[] _forces;
 
     public TestParticle() {
-        _position = new Vector1x3(Math.random() * 1000d, Math.random() * 100d,
-                Math.random() * 100d);
-        _velocity = new Vector1x3(Math.random() * 100d, Math.random() * 100d,
-                Math.random() * 100d);
-        _mass = Math.random() * 10000000d;
+        _position = new Vector1x3();
+        _position.setRandom(12500);
 
-        _actors = new IAction[1];
-        _actors[0] = new NewtonianGravity();
+        _velocity = new Vector1x3();
+        _velocity.setRandom(500);
+
+        _mass = Math.random() * 1e20d;
+
+        _forces = new IForce[1];
+        _forces[0] = new NewtonianGravity();
     }
 
     @Override
@@ -39,7 +43,7 @@ public class TestParticle implements IParticle {
 
     @Override
     public void calculate(IParticle p, double tDelta) {
-        for (IAction f : _actors) {
+        for (IForce f : _forces) {
             f.calculate(this, p, tDelta);
         }
     }
@@ -48,7 +52,7 @@ public class TestParticle implements IParticle {
     public void update(double time) {
         Vector1x3 force = new Vector1x3();
 
-        for (IAction action : _actors) {
+        for (IForce action : _forces) {
             force.add(action.getForce());
             action.resetForce();
         }
@@ -67,8 +71,17 @@ public class TestParticle implements IParticle {
     }
 
     @Override
-    public IAction[] getActors() {
-        return _actors;
+    public IForce[] getForces() {
+        return _forces;
+    }
+    
+    @Override
+    public void markForDeletion() {
+        _destroy = true;
+    }
+    
+    public boolean isMarkedForDeletion() {
+        return _destroy;
     }
 
     public String toString() {

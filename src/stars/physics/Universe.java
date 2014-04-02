@@ -3,33 +3,48 @@ package stars.physics;
 import java.util.AbstractList;
 import java.util.Vector;
 
-import stars.physics.actions.IActionOld;
-import stars.physics.particles.IParticleOld;
+import stars.DrawableUniverse;
+import stars.physics.nbody.BruteForceSolver;
+import stars.physics.nbody.NBodySolver;
+import stars.physics.particles.IParticle;
+import stars.physics.particles.TestParticle;
 
 public class Universe implements Runnable {
+    /**
+     * Gravitational constant.
+     */
+    public static final double G = 6.67e-11;
+    
     private Thread universeThread;
-
-    protected AbstractList<IParticleOld> particles;
-    protected AbstractList<IActionOld> actions;
-
+    
+    protected AbstractList<IParticle> particles;
+    private NBodySolver solver;
+    
     protected boolean running = false;
-    protected double step = 0.001d;
+    protected double step = 0.00001d;
     protected double totalTime = 0d;
     protected double boundRadius = 20000d;
-
+    
     public Universe() {
-        this(new Vector<IParticleOld>(), new Vector<IActionOld>());
+        this(new Vector<IParticle>());
     }
-
+    
     /**
      * Construct the universe given a list of particles and actions to perform.
      * 
      * @param c1
      * @param c2
      */
-    public Universe(AbstractList<IParticleOld> c1, AbstractList<IActionOld> c2) {
+    public Universe(AbstractList<IParticle> c1) {
         particles = c1;
-        actions = c2;
+        
+        c1.add(new TestParticle());
+        c1.add(new TestParticle());
+        c1.add(new TestParticle());
+        c1.add(new TestParticle());
+        c1.add(new TestParticle());
+        
+        solver = new BruteForceSolver();
     }
 
     public synchronized void start() {
@@ -37,23 +52,15 @@ public class Universe implements Runnable {
         universeThread = new Thread(this);
         universeThread.start();
     }
+    
+    public DrawableUniverse temp = null;
 
     public synchronized void step() {
         totalTime += getStep();
-
-        for (int i = 0; i < particles.size(); i++) {
-            IParticleOld p = particles.get(i);
-            p.getForce().set(0, 0, 0);
-        }
-
-        for (int i = 0; i < actions.size(); i++) {
-            IActionOld a = (IActionOld) actions.get(i);
-            a.execute(step, particles);
-        }
-
-        for (int i = 0; i < particles.size(); i++) {
-            IParticleOld p = particles.get(i);
-            p.update(step, particles);
+        solver.solve(particles, getStep());
+        
+        if (temp != null) {
+            temp.step();
         }
     }
 
@@ -75,20 +82,13 @@ public class Universe implements Runnable {
     }
 
     // **** GET / SET METHODS **********************
-    public void addAction(IActionOld action) {
-        actions.add(action);
-    }
 
-    public void addParticle(IParticleOld particle) {
+    public void addParticle(IParticle particle) {
         particles.add(particle);
     }
 
-    public void setParticles(AbstractList<IParticleOld> c) {
+    public void setParticles(AbstractList<IParticle> c) {
         particles = c;
-    }
-
-    public void setActions(AbstractList<IActionOld> c) {
-        actions = c;
     }
 
     public void setStep(double d) {
@@ -99,12 +99,8 @@ public class Universe implements Runnable {
         boundRadius = d;
     }
 
-    public AbstractList<IParticleOld> getParticles() {
+    public AbstractList<IParticle> getParticles() {
         return particles;
-    }
-
-    public AbstractList<IActionOld> getActions() {
-        return actions;
     }
 
     public double getStep() {
@@ -114,5 +110,10 @@ public class Universe implements Runnable {
     public double getBoundRadius() {
         return boundRadius;
     }
+    
+    public double getTotalTime() {
+        return totalTime;
+    }
+    
     // **** END OF GET / SET METHODS ***************
 }

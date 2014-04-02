@@ -1,9 +1,9 @@
 package stars.physics.particles;
 
 import stars.physics.Vector1x3;
-import stars.physics.actions.IAction;
+import stars.physics.actions.IForce;
 
-public interface IParticle {
+public interface IParticle extends Cloneable {
     // Properties
     public double mass();
 
@@ -15,5 +15,7 @@ public interface IParticle {
 
     public void update(double time);
 
-    public IAction[] getActors();
+    public IForce[] getForces();
+
+    public void markForDeletion();
 }

@@ -26,8 +26,6 @@ public class BruteForceSolver implements NBodySolver {
 
             // Update velocity and position.
             p1.update(timeDelta);
-
-            System.out.println("" + i + "\t" + p1);
         }
     }
 

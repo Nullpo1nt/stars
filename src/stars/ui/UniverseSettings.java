@@ -21,6 +21,8 @@ public class UniverseSettings extends JPanel implements ActionListener {
     JButton addParticle = new JButton("Add Particle");
     JButton addAction = new JButton("Add Action");
     
+    JButton addGenerator = new JButton("+Generator");
+    
     JTextField stepSize = new JTextField(3);
     
     JSlider scaleSlider = new JSlider();
@@ -31,6 +33,8 @@ public class UniverseSettings extends JPanel implements ActionListener {
         start.addActionListener(this);
         pause.addActionListener(this);
         step.addActionListener(this);
+        
+        addGenerator.addActionListener(this);
         
         universe = u;
         
@@ -50,9 +54,11 @@ public class UniverseSettings extends JPanel implements ActionListener {
         this.add(scaleSlider);
         this.add(scale);
         
+        this.add(addGenerator);
+        
         scale.setValue(universe.getScale());
         
-        stepSize.setText("" + universe.getStep() + " s");
+        //stepSize.setText("" + universe.getStep() + " s");
         stepSize.setToolTipText("Time delta between steps in seconds.");
         stepSize.setEditable(false);
     }
