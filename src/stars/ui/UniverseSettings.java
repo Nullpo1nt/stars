@@ -14,8 +14,7 @@ import stars.DrawableUniverse;
 @SuppressWarnings("serial")
 public class UniverseSettings extends JPanel implements ActionListener {
 	DrawableUniverse universe;
-    JButton start = new JButton("Start");
-    JButton pause = new JButton("Pause");
+    JButton startstop = new JButton("Start");
     JButton step = new JButton("Step");
     
     JButton addParticle = new JButton("Add Particle");
@@ -30,8 +29,7 @@ public class UniverseSettings extends JPanel implements ActionListener {
     
     
     public UniverseSettings(DrawableUniverse u) {
-        start.addActionListener(this);
-        pause.addActionListener(this);
+        startstop.addActionListener(this);
         step.addActionListener(this);
         
         addGenerator.addActionListener(this);
@@ -44,9 +42,8 @@ public class UniverseSettings extends JPanel implements ActionListener {
     
     public void init() {
         this.setLayout(new FlowLayout());
-        this.add(start);
+        this.add(startstop);
         this.add(step);
-        this.add(pause);
         this.add(new JLabel("Step:"));
         this.add(stepSize);
         

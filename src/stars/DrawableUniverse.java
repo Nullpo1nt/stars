@@ -10,10 +10,9 @@ import javax.swing.JPanel;
 
 import stars.physics.Universe;
 import stars.physics.particles.IParticle;
-import stars.ui.UniverseSettings;
 
 public class DrawableUniverse implements ActionListener {
-    private static DrawableParticle dp = new DrawableParticle();
+    private static DrawableParticle particleRenderer = new DrawableParticle();
 
     private Universe universe;
 
@@ -130,13 +129,7 @@ public class DrawableUniverse implements ActionListener {
         }
 
         if (_drawParticles) {
-            for (int i = 0; i < universe.getParticles().size(); i++) {
-                try {
-                    dp.draw(g, 1, universe.getParticles().get(i));
-                } catch (IndexOutOfBoundsException ex) {
-                    System.out.println(ex.getMessage());
-                }
-            }
+            particleRenderer.draw(g, 1, universe.getParticles());
         }
     }
 
@@ -150,12 +143,8 @@ public class DrawableUniverse implements ActionListener {
         if (cmd.equals("Start")) {
             universe.start();
         }
-        if (cmd.equals("Pause")) {
+        if (cmd.equals("Stop")) {
             universe.stop();
         }
-    }
-
-    public JPanel getSettingsPanel() {
-        return new UniverseSettings(this);
     }
 }

@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
 import javax.swing.*;
+
+import stars.ui.UniverseSettings;
 
 @SuppressWarnings("serial")
 public class Stars extends JFrame {
-	DrawableUniverse uni = new DrawableUniverse();
-	UniversePanel uniP;
+	DrawableUniverse universeDrawable = new DrawableUniverse();
+	UniversePanel universePanel;
     JPanel universeSettings;
     JPanel contentPane;
     JMenuBar menuBar = new JMenuBar();
@@ -32,37 +35,37 @@ public class Stars extends JFrame {
         };
         
         addWindowListener(l);
-		
-        uniP = new UniversePanel(uni);
-        uni.setPanel(uniP);
-        universeSettings = uni.getSettingsPanel();
+        
+        universePanel = new UniversePanel(universeDrawable);
+        universeDrawable.setPanel(universePanel);
+        universeSettings = new UniverseSettings(universeDrawable);
         
         // Content Pane...
         contentPane = (JPanel)this.getContentPane();
         contentPane.setLayout(new BorderLayout());
-        contentPane.add(uniP, BorderLayout.CENTER);
+        contentPane.add(universePanel, BorderLayout.CENTER);
         contentPane.add(universeSettings, BorderLayout.SOUTH);
         this.pack();
 
         this.setSize(800,600);
         this.setTitle("StarZ");
 
-        JMenuItem i;
+        //JMenuItem i;
         
-        JMenu simMenu = new JMenu("Simulation");
-        i = new JMenuItem("Start");
-        i.addActionListener(uni);
-        simMenu.add(i);
-        i = new JMenuItem("Step");
-        i.addActionListener(uni);
-        simMenu.add(i);
-        i = new JMenuItem("Pause");
-        i.addActionListener(uni);
-        simMenu.add(i);
+//        JMenu simMenu = new JMenu("Simulation");
+//        i = new JMenuItem("Start");
+//        i.addActionListener(universeDrawable);
+//        simMenu.add(i);
+//        i = new JMenuItem("Step");
+//        i.addActionListener(universeDrawable);
+//        simMenu.add(i);
+//        i = new JMenuItem("Pause");
+//        i.addActionListener(universeDrawable);
+//        simMenu.add(i);
 
-        menuBar.add(simMenu);
+        //menuBar.add(simMenu);
         
-        this.setJMenuBar(menuBar);
+        //this.setJMenuBar(menuBar);
         
         validate();
         setVisible(true);

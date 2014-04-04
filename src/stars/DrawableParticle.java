@@ -1,8 +1,9 @@
 package stars;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.AbstractCollection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -10,25 +11,47 @@ import stars.physics.Vector1x3;
 import stars.physics.particles.IParticle;
 
 public class DrawableParticle {
-    boolean _drawTail = false, 
+    boolean _drawTail = true, 
             _drawVelocity = false, 
             _drawAccel = false,
-            _drawRadius = false;
+            _drawRadius = true;
     int _maxTailSize = 100;
-    IParticle particle;
+    //IParticle particle;
 
-    LinkedList<Vector1x3> tail = new LinkedList<Vector1x3>();
+    Hashtable<IParticle,LinkedList<Vector1x3>> particleReg = new Hashtable<IParticle, LinkedList<Vector1x3>>();
+    
 
     public DrawableParticle() {
     }
 
-    public void draw(Graphics g, double scale, IParticle p) {
-        particle = p;
+    protected LinkedList<Vector1x3> getTail(IParticle particle) {
+        LinkedList<Vector1x3> tail = particleReg.get(particle);
 
-        draw((Graphics2D) g);
+        if (tail == null) {
+            tail = new LinkedList<>();
+            particleReg.put(particle, tail);
+        }
+
+        return tail;
     }
-
-    public void draw(Graphics2D g) {
+    
+    public void draw(Graphics2D g, double scale, AbstractCollection<IParticle> particles) {
+        for (IParticle particle : particles) {
+            draw(g, scale, particle);
+        }
+        
+//        // Prune tail collection
+//        for (LinkedList<Vector1x3> tail : particleReg.values()) {
+//            if (tail.size() > _maxTailSize) {
+//                tail.removeFirst();
+//                
+//            }
+//        }
+    }
+    
+    public void draw(Graphics2D g, double scale, IParticle particle) {
+        LinkedList<Vector1x3> tail = getTail(particle);
+        
         Vector1x3 position = particle.position();
         int x = (int) position.x, y = (int) position.y;
 
