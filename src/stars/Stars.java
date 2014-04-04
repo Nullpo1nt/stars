@@ -7,13 +7,17 @@ import java.awt.event.WindowListener;
 
 import javax.swing.*;
 
+import stars.physics.Universe;
+import stars.ui.UniversePanel;
 import stars.ui.UniverseSettings;
 
 @SuppressWarnings("serial")
 public class Stars extends JFrame {
-	DrawableUniverse universeDrawable = new DrawableUniverse();
-	UniversePanel universePanel;
+    UniverseMediator universeMediator;
+
+    UniversePanel universePanel;
     JPanel universeSettings;
+
     JPanel contentPane;
     JMenuBar menuBar = new JMenuBar();
     
@@ -36,9 +40,12 @@ public class Stars extends JFrame {
         
         addWindowListener(l);
         
-        universePanel = new UniversePanel(universeDrawable);
-        universeDrawable.setPanel(universePanel);
-        universeSettings = new UniverseSettings(universeDrawable);
+        Universe uni = new Universe();
+        
+        universeMediator = new UniverseMediator(uni);
+        
+        universePanel = new UniversePanel(universeMediator, uni);
+        universeSettings = new UniverseSettings(universeMediator);
         
         // Content Pane...
         contentPane = (JPanel)this.getContentPane();
@@ -50,7 +57,7 @@ public class Stars extends JFrame {
         this.setSize(800,600);
         this.setTitle("StarZ");
 
-        //JMenuItem i;
+//        JMenuItem i;
         
 //        JMenu simMenu = new JMenu("Simulation");
 //        i = new JMenuItem("Start");
@@ -63,9 +70,8 @@ public class Stars extends JFrame {
 //        i.addActionListener(universeDrawable);
 //        simMenu.add(i);
 
-        //menuBar.add(simMenu);
-        
-        //this.setJMenuBar(menuBar);
+//        menuBar.add(simMenu);
+//        this.setJMenuBar(menuBar);
         
         validate();
         setVisible(true);

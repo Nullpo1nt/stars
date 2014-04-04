@@ -1,4 +1,4 @@
-package stars;
+package stars.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -15,8 +15,8 @@ public class DrawableParticle {
             _drawVelocity = false, 
             _drawAccel = false,
             _drawRadius = true;
+    
     int _maxTailSize = 100;
-    //IParticle particle;
 
     Hashtable<IParticle,LinkedList<Vector1x3>> particleReg = new Hashtable<IParticle, LinkedList<Vector1x3>>();
     

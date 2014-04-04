@@ -5,7 +5,6 @@ public class Vector1x3 implements Cloneable  {
                   y = 0.0d,
                   z = 0.0d;
 
-    
     public Vector1x3() {  }
     
     public Vector1x3(Vector1x3 v) {

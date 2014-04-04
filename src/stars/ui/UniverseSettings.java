@@ -9,11 +9,12 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import stars.DrawableUniverse;
+import stars.UniverseMediator;
 
 @SuppressWarnings("serial")
 public class UniverseSettings extends JPanel implements ActionListener {
-	DrawableUniverse universe;
+	UniverseMediator universeMediator;
+	
     JButton startstop = new JButton("Start");
     JButton step = new JButton("Step");
     
@@ -28,17 +29,27 @@ public class UniverseSettings extends JPanel implements ActionListener {
     JSpinner scale = new JSpinner();
     
     
-    public UniverseSettings(DrawableUniverse u) {
+    public UniverseSettings(UniverseMediator um) {
+        universeMediator = um;
+        universeMediator.register(this);
+        
         startstop.addActionListener(this);
         step.addActionListener(this);
         
         addGenerator.addActionListener(this);
         
-        universe = u;
-        
         init();
     }
     
+    public void isRunning(boolean b) {
+        if (b) {
+            startstop.setActionCommand("Stop");
+            startstop.setText("Stop");
+        } else {
+            startstop.setActionCommand("Start");
+            startstop.setText("Start");
+        }
+    }
     
     public void init() {
         this.setLayout(new FlowLayout());
@@ -53,7 +64,7 @@ public class UniverseSettings extends JPanel implements ActionListener {
         
         this.add(addGenerator);
         
-        scale.setValue(universe.getScale());
+        //scale.setValue(universeMediator.getScale());
         
         //stepSize.setText("" + universe.getStep() + " s");
         stepSize.setToolTipText("Time delta between steps in seconds.");
@@ -61,6 +72,16 @@ public class UniverseSettings extends JPanel implements ActionListener {
     }
     
     public void actionPerformed(ActionEvent e) {
-        ((ActionListener)universe).actionPerformed(e);
+        if (e.getActionCommand().equals("Step")) {
+            universeMediator.step();
+        }
+        
+        if (e.getActionCommand().equals("Start")) {
+            universeMediator.start();
+        }
+        
+        if (e.getActionCommand().equals("Stop")) {
+            universeMediator.stop();
+        }
     }
 }

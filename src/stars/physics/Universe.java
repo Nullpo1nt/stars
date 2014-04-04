@@ -3,30 +3,29 @@ package stars.physics;
 import java.util.AbstractList;
 import java.util.Vector;
 
-import stars.DrawableUniverse;
 import stars.physics.nbody.BruteForceSolver;
 import stars.physics.nbody.NBodySolver;
 import stars.physics.particles.IParticle;
 import stars.physics.particles.TestParticle;
 
-public class Universe implements Runnable {
+public class Universe {
     /**
      * Gravitational constant.
      */
     public static final double G = 6.67e-11;
     
-    private Thread universeThread;
+//    private Thread universeThread;
     
     protected AbstractList<IParticle> particles;
     private NBodySolver solver;
     
-    protected boolean running = false;
+//    protected boolean running = false;
     protected double step = 0.00001d;
     protected double totalTime = 0d;
     protected double boundRadius = 20000d;
     
     public Universe() {
-        this(new Vector<IParticle>());
+        this(new Vector<IParticle>(), new BruteForceSolver());
     }
     
     /**
@@ -35,7 +34,7 @@ public class Universe implements Runnable {
      * @param c1
      * @param c2
      */
-    public Universe(AbstractList<IParticle> c1) {
+    public Universe(AbstractList<IParticle> c1, NBodySolver s1) {
         particles = c1;
         
         c1.add(new TestParticle());
@@ -44,42 +43,38 @@ public class Universe implements Runnable {
         c1.add(new TestParticle());
         c1.add(new TestParticle());
         
-        solver = new BruteForceSolver();
+        solver = s1;
     }
 
-    public synchronized void start() {
-        running = true;
-        universeThread = new Thread(this);
-        universeThread.start();
-    }
-    
-    public DrawableUniverse temp = null;
+//    public synchronized void start() {
+//        running = true;
+//        universeThread = new Thread(this);
+//        universeThread.start();
+//    }
 
-    public synchronized void step() {
-        totalTime += getStep();
-        solver.solve(particles, getStep());
+    public void step() {
+        double step = getStepSize();
         
-        if (temp != null) {
-            temp.step();
-        }
+        totalTime += step;
+        solver.solve(particles, step);
     }
 
-    public synchronized void stop() {
-        running = false;
-    }
+//    public synchronized void stop() {
+//        running = false;
+//    }
 
-    public synchronized boolean getRunning() {
-        return running;
-    }
+//    public synchronized boolean getRunning() {
+//        return running;
+//    }
 
     /**
      * 
      */
-    public void run() {
-        while (getRunning()) {
-            step();
-        }
-    }
+//    public void run() {
+//        while (getRunning()) {
+//            step();
+//        }
+//    }
 
     // **** GET / SET METHODS **********************
 
@@ -103,7 +98,7 @@ public class Universe implements Runnable {
         return particles;
     }
 
-    public double getStep() {
+    public double getStepSize() {
         return step;
     }
 
