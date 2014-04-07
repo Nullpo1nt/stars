@@ -14,12 +14,9 @@ public class Universe {
      */
     public static final double G = 6.67e-11;
     
-//    private Thread universeThread;
-    
     protected AbstractList<IParticle> particles;
     private NBodySolver solver;
     
-//    protected boolean running = false;
     protected double step = 0.00001d;
     protected double totalTime = 0d;
     protected double boundRadius = 20000d;
@@ -46,35 +43,12 @@ public class Universe {
         solver = s1;
     }
 
-//    public synchronized void start() {
-//        running = true;
-//        universeThread = new Thread(this);
-//        universeThread.start();
-//    }
-
     public void step() {
         double step = getStepSize();
         
         totalTime += step;
         solver.solve(particles, step);
     }
-
-//    public synchronized void stop() {
-//        running = false;
-//    }
-
-//    public synchronized boolean getRunning() {
-//        return running;
-//    }
-
-    /**
-     * 
-     */
-//    public void run() {
-//        while (getRunning()) {
-//            step();
-//        }
-//    }
 
     // **** GET / SET METHODS **********************
 
