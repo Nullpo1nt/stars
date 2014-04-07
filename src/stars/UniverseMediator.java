@@ -16,6 +16,8 @@ public class UniverseMediator implements Runnable {
     
     boolean running = false;
     
+    long rate = 500;
+    
     public UniverseMediator(Universe u) {
         universe = u;
     }
@@ -26,6 +28,14 @@ public class UniverseMediator implements Runnable {
     
     public void register(UniverseSettings us) {
         settings = us;
+    }
+    
+    public void updateRate(long value) {
+        rate = value;
+    }
+    
+    public void updateStepSize(double value) {
+        universe.setStep(value);
     }
     
     public void step() {
@@ -43,11 +53,17 @@ public class UniverseMediator implements Runnable {
     public void stop() {
         running = false;
     }
-
+    
     @Override
     public void run() {
         while (running) {
             step();
+            
+            try {
+                Thread.sleep(rate);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         settings.isRunning(false);
