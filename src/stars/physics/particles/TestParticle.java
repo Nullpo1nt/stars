@@ -1,5 +1,7 @@
 package stars.physics.particles;
 
+import java.util.ArrayList;
+
 import stars.physics.Vector1x3;
 import stars.physics.actions.IForce;
 import stars.physics.actions.NewtonianGravity;
@@ -10,25 +12,33 @@ public class TestParticle implements IParticle {
     private Vector1x3 _position;
     private Vector1x3 _velocity;
     private double _mass;
-
+    private double _radius;
+    
+    public Vector1x3 accel;
+    
+    private double density = 5515; // kg/m^3
+    
     private IForce[] _forces;
+    
+    private ArrayList<IParticle> _collisions;
 
     public TestParticle() {
         _position = new Vector1x3();
-        _position.setRandom(12500);
-
         _velocity = new Vector1x3();
-        _velocity.setRandom(500);
-
-        _mass = Math.random() * 1e20d;
 
         _forces = new IForce[1];
         _forces[0] = new NewtonianGravity();
+        
+        _collisions = new ArrayList<>();
     }
 
     @Override
     public double mass() {
         return _mass;
+    }
+    
+    public double radius() {
+        return _radius;
     }
 
     @Override
@@ -60,6 +70,8 @@ public class TestParticle implements IParticle {
         // Scale to acceleration
         force.scale(1 / _mass);
 
+        accel = new Vector1x3(force);
+        
         // Scale to velocity
         force.scale(time);
         _velocity.add(force);
@@ -85,7 +97,51 @@ public class TestParticle implements IParticle {
     }
 
     public String toString() {
-        return "mass = " + _mass + " kg" + ", p = " + _position.toString()
-                + " m" + ", v = " + _velocity.toString() + " m/s";
+        return "mass = " + _mass + " kg" + ", radius = " + _radius + "m, density = " + density + "kg/m^3, "
+                + "\n\t p = " + _position.toString() + " m"
+                + ",\n\t v = " + _velocity.toString() + " m/s";
+    }
+    
+    @Override
+    public void randomize(double massBound, double positionBound,
+            double velocityBound) {
+        
+        _mass = Math.random() * massBound;
+        _radius = Math.pow((_mass * 3) / (density * 4 * Math.PI), 1d/3d);
+        
+        _position.setRandom(positionBound);
+        _velocity.setRandom(velocityBound);
+    }
+
+    @Override
+    public void addCollision(IParticle p) {
+        _collisions.add(p);
+    }
+
+    @Override
+    public ArrayList<IParticle> getCollisions() {
+        return _collisions;
+    }
+
+    @Override
+    public void merge(IParticle p) {
+        
+        double tmass = _mass + p.mass();
+        
+        _velocity.scale(_mass / tmass);
+        p.velocity().scale(p.mass() / tmass);
+        _velocity.add(p.velocity());
+
+        //double oldM = _mass;
+        
+        _mass += p.mass();
+        
+        double area = (Math.PI * Math.pow(p.radius(),2)) + 
+                (Math.PI * Math.pow(_radius, 2));
+        
+        _radius = Math.sqrt(area / Math.PI);
+        //_radius += p.radius();
+        
+
     }
 }

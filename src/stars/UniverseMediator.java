@@ -1,13 +1,19 @@
 package stars;
 
 import stars.physics.Universe;
+import stars.physics.actions.ParticleGenerator;
+import stars.physics.particles.TestParticle;
 import stars.ui.UniversePanel;
 import stars.ui.UniverseSettings;
 
 public class UniverseMediator implements Runnable {
 
+    // Simulation objects
     private Universe universe;
     
+    private ParticleGenerator generator;
+    
+    // GUI Components
     private UniversePanel panel;
     
     private UniverseSettings settings;
@@ -39,8 +45,16 @@ public class UniverseMediator implements Runnable {
     }
     
     public void step() {
-        universe.step();
-        panel.repaint();
+        if (!panel.isPainting) {
+            if (generator != null) {
+                generator.execute(universe.getStepSize(), universe.getParticles());
+            }
+        
+            universe.step();
+            panel.repaint();
+        } else {
+            System.out.println("!!! Painting, skiping update.");
+        }
     }
     
     public void start() {
@@ -52,6 +66,14 @@ public class UniverseMediator implements Runnable {
     
     public void stop() {
         running = false;
+    }
+    
+    public void toggleGenerator() {
+        if (generator == null) {
+            generator = new ParticleGenerator(TestParticle.class, 100, 100);
+        } else {
+            generator = null;
+        }
     }
     
     @Override

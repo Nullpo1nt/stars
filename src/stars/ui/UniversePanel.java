@@ -30,7 +30,8 @@ public class UniversePanel extends JPanel implements MouseListener,
                       _drawParticles = true,
                       _drawScale = true;
 
-    protected double _scale = 0.015;
+    /** meters per pixel */
+    protected double _scale = 1d/50d;
     
     protected int _xOffset = 0, 
                   _yOffset = 0;
@@ -64,15 +65,17 @@ public class UniversePanel extends JPanel implements MouseListener,
     public boolean isOpaque() {
         return true;
     }
-
-    /**
-     * All components of the surface using the provided graphics object.
-     */
+public boolean isPainting = false;
+    
     @Override
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
 
-        draw(g, getWidth(), getHeight());
+        if (!isPainting) {
+            isPainting = true;
+            draw(g, getWidth(), getHeight());
+            isPainting = false;
+        }
     }
 
     protected void draw(Graphics2D g, int width, int height) {
@@ -82,7 +85,7 @@ public class UniversePanel extends JPanel implements MouseListener,
         if (_drawScale) {
             g.setColor(Color.GRAY);
 
-            char[] c = new String("" + (1 / _scale) * 50 + " m").toCharArray();
+            char[] c = new String("" + 1/_scale * 50 + " m").toCharArray();
             g.drawChars(c, 0, c.length, 70, height - 5);
             g.drawLine(10, height - 10, 60, height - 10);
             g.drawLine(10, height - 5, 10, height - 15);
@@ -101,52 +104,43 @@ public class UniversePanel extends JPanel implements MouseListener,
             c = new String("Particles: " + size).toCharArray();
             g.drawChars(c, 0, c.length, 10, 15);
         }
-
-        // Gravity forces...
-        // g.drawLine(10, 100, 10, 130);
-        // g.drawLine(30, 100, 30, 130);
-        // g.drawLine(50, 100, 50, 130);
-        //
-        // g.setColor(Color.GREEN);
-        // g.drawLine(30, 105, 30 + (int)(this.g.sx * 20), 105);
-        // g.drawLine(30, 115, 30 + (int)(this.g.sy * 20), 115);
-        // g.drawLine(30, 125, 30 + (int)(this.g.sz * 20), 125);
-
-        // g.drawLine(0, 0, (int)(200 * this.g.sx), (int)(200 * this.g.sy));
-
-        g.translate((width / 2) + _xOffset, (height / 2) + _yOffset);
-        g.scale(_scale, _scale);
+        
+        
+        // These need to be scaled
+        // -------------------------------
+        
+        if (_drawParticles) {
+            particleRenderer.draw(g, width, height, _scale, universe.getParticles());
+        }
 
         if (_drawBoundRadius) {
-            double radius = universe.getBoundRadius();
-            double diameter = 2 * radius;
-            double negRadius = -1 * radius;
-
-            g.setColor(new Color(1.0f, 0f, 0f));
-            g.drawRect((int) negRadius, (int) negRadius, (int) diameter,
-                    (int) diameter);
-            g.setColor(new Color(0.5f, 0f, 0f));
-            g.drawOval((int) negRadius + 50, (int) negRadius + 50,
-                    (int) diameter - 100, (int) diameter - 100);
+//            double radius = universe.getBoundRadius();
+//            double diameter = 2 * radius;
+//            double negRadius = -1 * radius;
+//
+//            g.setColor(new Color(1.0f, 0f, 0f));
+//            g.drawRect((int) negRadius, (int) negRadius, (int) diameter,
+//                    (int) diameter);
+//            g.setColor(new Color(0.5f, 0f, 0f));
+//            g.drawOval((int) negRadius + 50, (int) negRadius + 50,
+//                    (int) diameter - 100, (int) diameter - 100);
         }
 
         if (_drawRings) {
-            g.setColor(new Color(0.125f, 0.125f, 0.125f));
-            g.drawOval((-5000), (-5000), (10000), (10000));
-
-            g.setColor(new Color(0.20f, 0.20f, 0.20f));
-            g.drawOval((-2500), (-2500), (5000), (5000));
-
-            g.drawLine(0, -5000, 0, 5000);
-            g.drawLine(-5000, 0, 5000, 0);
-
-            g.setColor(new Color(0.3f, 0.3f, 0.3f));
-            g.drawOval((-1250), (-1250), (2500), (2500));
+//            g.setColor(new Color(0.125f, 0.125f, 0.125f));
+//            g.drawOval((-5000), (-5000), (10000), (10000));
+//
+//            g.setColor(new Color(0.20f, 0.20f, 0.20f));
+//            g.drawOval((-2500), (-2500), (5000), (5000));
+//
+//            g.drawLine(0, -5000, 0, 5000);
+//            g.drawLine(-5000, 0, 5000, 0);
+//
+//            g.setColor(new Color(0.3f, 0.3f, 0.3f));
+//            g.drawOval((-1250), (-1250), (2500), (2500));
         }
 
-        if (_drawParticles) {
-            particleRenderer.draw(g, 1, universe.getParticles());
-        }
+        
     }
     
     @Override
@@ -170,26 +164,26 @@ public class UniversePanel extends JPanel implements MouseListener,
     @Override
     public void mousePressed(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println(arg0);
+        //System.out.println(arg0);
     }
 
     @Override
     public void mouseReleased(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println(arg0);
+        //System.out.println(arg0);
     }
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         // TODO Auto-generated method stub
-        System.out.println(e);
+        //System.out.println(e);
         if (e.getWheelRotation() == 1) {
             setScale(getScale() * 2);
         } else {
             setScale(getScale() / 2);
         }
 
-        System.out.println(getScale());
+        //System.out.println(getScale());
         // System.out.println("" + (_universe.getScale() + (e.getWheelRotation()
         // * e.getClickCount() * 0.005)));
         // _universe.setScale(_universe.getScale() + (e.getWheelRotation() *
@@ -201,7 +195,7 @@ public class UniversePanel extends JPanel implements MouseListener,
     @Override
     public void mouseDragged(MouseEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println(arg0);
+       // System.out.println(arg0);
     }
 
     @Override

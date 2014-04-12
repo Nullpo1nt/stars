@@ -33,6 +33,9 @@ public class UniverseSettings extends JPanel implements ActionListener, ChangeLi
     
     JSpinner scale = new JSpinner();
     
+    JButton generator = new JButton("Generator");
+    JLabel generatorLabel = new JLabel("Off");
+    
     
     public UniverseSettings(UniverseMediator um) {
         universeMediator = um;
@@ -44,6 +47,8 @@ public class UniverseSettings extends JPanel implements ActionListener, ChangeLi
         rate.addChangeListener(this);
         stepSize.addChangeListener(this);
         stepSize.setEditor(new JSpinner.NumberEditor(stepSize, "0.0000"));
+        
+        generator.addActionListener(this);
         
         init();
     }
@@ -63,6 +68,8 @@ public class UniverseSettings extends JPanel implements ActionListener, ChangeLi
         
         this.add(startstop);
         this.add(step);
+        this.add(generator);
+        this.add(generatorLabel);
         
         this.add(new JSeparator(JSeparator.VERTICAL));
         
@@ -93,6 +100,15 @@ public class UniverseSettings extends JPanel implements ActionListener, ChangeLi
         
         if (e.getActionCommand().equals("Stop")) {
             universeMediator.stop();
+        }
+        
+        if (e.getActionCommand().equals("Generator")) {
+            universeMediator.toggleGenerator();
+            if (generatorLabel.getText().equals("Off")) {
+                generatorLabel.setText("On");
+            } else {
+                generatorLabel.setText("Off");
+            }
         }
     }
 

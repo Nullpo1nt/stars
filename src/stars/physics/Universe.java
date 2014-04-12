@@ -1,12 +1,12 @@
 package stars.physics;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import stars.physics.nbody.BruteForceSolver;
 import stars.physics.nbody.NBodySolver;
 import stars.physics.particles.IParticle;
-import stars.physics.particles.TestParticle;
 
 public class Universe {
     /**
@@ -19,7 +19,10 @@ public class Universe {
     
     protected double step = 0.00001d;
     protected double totalTime = 0d;
-    protected double boundRadius = 20000d;
+    
+    protected boolean enforceBounds = false;
+    
+    protected double boundRadius = 1e6d;
     
     public Universe() {
         this(new Vector<IParticle>(), new BruteForceSolver());
@@ -34,12 +37,6 @@ public class Universe {
     public Universe(AbstractList<IParticle> c1, NBodySolver s1) {
         particles = c1;
         
-        c1.add(new TestParticle());
-        c1.add(new TestParticle());
-        c1.add(new TestParticle());
-        c1.add(new TestParticle());
-        c1.add(new TestParticle());
-        
         solver = s1;
     }
 
@@ -48,6 +45,35 @@ public class Universe {
         
         totalTime += step;
         solver.solve(particles, step);
+        
+        if (enforceBounds) {
+            // TODO: Figure out life cycle management
+            for (int i = 0; i < particles.size(); i++) {
+                IParticle particle = particles.get(i);
+                
+                if (Math.abs(particle.position().getMagnitude()) > boundRadius) {
+                    particle.markForDeletion();
+                    particles.remove(particle);
+                    System.out.println("Out of bounds, deleting:\n\t"+particle);
+                    i--;
+                    continue;
+                }
+            }
+        }
+        
+        for (int i = 0; i < particles.size(); i++) {
+            IParticle particle = particles.get(i);
+            ArrayList<IParticle> col = particle.getCollisions();
+            
+            if (col.size() > 0) {
+                for (IParticle p : col) {
+                    particle.merge(p);
+                    particles.remove(p);
+                }
+                
+                col.clear();
+            }
+        }
     }
 
     // **** GET / SET METHODS **********************

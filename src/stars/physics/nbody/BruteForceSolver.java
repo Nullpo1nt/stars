@@ -22,24 +22,19 @@ public class BruteForceSolver implements NBodySolver {
 
                 p1.calculate(p2, timeDelta);
                 p2.calculate(p1, timeDelta);
+                
+                // FIXME Collision detection doesn't belong here...
+                double dis = Math.abs(p1.position().getDistance(p2.position()));
+                
+                if (dis <= p1.radius() || dis <= p2.radius()) {
+                    p1.addCollision(p2);
+                    System.out.println("Collision between:\n\tP1 " + p1 + "\n\tP2 " + p2);
+                    System.out.println(dis);
+                }
             }
 
             // Update velocity and position.
             p1.update(timeDelta);
-        }
-    }
-
-    public static void main(String[] args) {
-        ArrayList<IParticle> particles = new ArrayList<IParticle>();
-        NBodySolver solver = new BruteForceSolver();
-
-        particles.add(new TestParticle());
-        particles.add(new TestParticle());
-
-        for (long i = 0; i < 10; i++) {
-            System.out.println("" + i
-                    + "===============================================");
-            solver.solve(particles, 1);
         }
     }
 }

@@ -9,11 +9,12 @@ import java.util.LinkedList;
 
 import stars.physics.Vector1x3;
 import stars.physics.particles.IParticle;
+import stars.physics.particles.TestParticle;
 
 public class DrawableParticle {
-    boolean _drawTail = true, 
+    boolean _drawTail = false, 
             _drawVelocity = false, 
-            _drawAccel = false,
+            _drawAccel = true,
             _drawRadius = true;
     
     int _maxTailSize = 100;
@@ -35,7 +36,14 @@ public class DrawableParticle {
         return tail;
     }
     
-    public void draw(Graphics2D g, double scale, AbstractCollection<IParticle> particles) {
+    int _width;
+    int _height;
+    
+    public void draw(Graphics2D g, int width, int height, double scale, 
+            AbstractCollection<IParticle> particles) {
+        _width = width;
+        _height = height;
+        
         for (IParticle particle : particles) {
             draw(g, scale, particle);
         }
@@ -49,11 +57,22 @@ public class DrawableParticle {
 //        }
     }
     
+    Vector1x3 target = new Vector1x3();
+    
+    private int scaleX(double x, double z, double scale) {
+        return (int)((x - target.x) * scale) + (_width / 2);
+    }
+    
+    private int scaleY(double y, double z, double scale) {
+        return (int)((y - target.y) * scale) + (_height / 2);
+    }
+    
     public void draw(Graphics2D g, double scale, IParticle particle) {
         LinkedList<Vector1x3> tail = getTail(particle);
         
         Vector1x3 position = particle.position();
-        int x = (int) position.x, y = (int) position.y;
+        int x = scaleX(position.x, position.z, scale); 
+        int y = scaleY(position.y, position.z, scale);
 
         if (_drawTail) {
             float colorInc = 128 / (float) _maxTailSize;
@@ -84,17 +103,18 @@ public class DrawableParticle {
                     + (int) (particle.velocity().y));
         }
 
-        // if (_drawAccel) {
-        // g.setColor(Color.MAGENTA);
-        // g.drawLine(x,y,x+(int)(particle.getAcceleration().x *
-        // 20),y+(int)(particle.getAcceleration().y * 20));
-        // }
+         if (_drawAccel) {
+             g.setColor(Color.MAGENTA);
+             g.drawLine(x,y,x+(int)(((TestParticle)particle).accel.x *
+                     10000d),y+(int)(((TestParticle)particle).accel.y * 10000d));
+         }
 
         if (_drawRadius) {
-            g.setColor(Color.DARK_GRAY);
-             int radius = (int) (10);
-            // int radius = (int) ((Math.abs(particle.position().z + 20000) / 40000) * particle.getRadius());
-            int diameter = radius * 2;
+            g.setColor(Color.WHITE);
+            
+            int radius = (int)(particle.radius() * scale);
+            //int radius = (int) ((Math.abs(particle.position().z + 1e6d) / 1e12) * particle.radius()*2);
+            int diameter = (radius * 2);
             g.drawOval(x - radius, y - radius, diameter, diameter);
         }
 
