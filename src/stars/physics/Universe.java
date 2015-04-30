@@ -1,33 +1,37 @@
 package stars.physics;
 
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Vector;
 
-import stars.physics.nbody.BruteForceSolver;
-import stars.physics.nbody.NBodySolver;
+import stars.math.Tuple3;
+import stars.math.Vector3;
+import stars.physics.nbody.solver.BruteForceSolver;
+import stars.physics.nbody.solver.NBodySolver;
 import stars.physics.particles.IParticle;
+import stars.physics.particles.IParticleState;
 
 public class Universe {
     /**
      * Gravitational constant.
      */
-    public static final double G = 6.67e-11;
-    
+    public static final double        G             = 6.67e-11;
+
     protected AbstractList<IParticle> particles;
-    private NBodySolver solver;
-    
-    protected double step = 0.00001d;
-    protected double totalTime = 0d;
-    
-    protected boolean enforceBounds = false;
-    
-    protected double boundRadius = 1e6d;
-    
+    private NBodySolver               solver;
+
+    protected double                  step          = 0.00001d;
+    protected double                  totalTime     = 0d;
+
+    protected boolean                 enforceBounds = true;
+
+    protected double                  boundRadius   = 1e8d;
+
+    public Tuple3                     centerOfMass  = new Vector3();
+
     public Universe() {
         this(new Vector<IParticle>(), new BruteForceSolver());
     }
-    
+
     /**
      * Construct the universe given a list of particles and actions to perform.
      * 
@@ -36,44 +40,60 @@ public class Universe {
      */
     public Universe(AbstractList<IParticle> c1, NBodySolver s1) {
         particles = c1;
-        
         solver = s1;
     }
 
     public void step() {
         double step = getStepSize();
-        
+
         totalTime += step;
+
         solver.solve(particles, step);
-        
-        if (enforceBounds) {
-            // TODO: Figure out life cycle management
-            for (int i = 0; i < particles.size(); i++) {
-                IParticle particle = particles.get(i);
-                
+
+        for (int i = 0; i < particles.size(); i++) {
+            IParticle particle = particles.get(i);
+
+            if (enforceBounds) {
                 if (Math.abs(particle.position().getMagnitude()) > boundRadius) {
                     particle.markForDeletion();
                     particles.remove(particle);
-                    System.out.println("Out of bounds, deleting:\n\t"+particle);
+                    System.out.println("Ejected:\n\t" + particle);
                     i--;
                     continue;
                 }
             }
+
+//            ArrayList<IParticle> col = particle.getCollisions();
+//
+//            if (col.size() > 0) {
+//                for (IParticle p : col) {
+//                    particle.merge(p.getCurrentState());
+//                    particles.remove(p);
+//                }
+//
+//                col.clear();
+//            }
         }
-        
+
+        centerOfMass = calculateCenterOfMass(particles);
+    }
+
+    private Tuple3 calculateCenterOfMass(AbstractList<IParticle> particles) {
+        double mx = 0d;
+        double my = 0d;
+        double mz = 0d;
+        double mtotal = 0d;
+
         for (int i = 0; i < particles.size(); i++) {
-            IParticle particle = particles.get(i);
-            ArrayList<IParticle> col = particle.getCollisions();
-            
-            if (col.size() > 0) {
-                for (IParticle p : col) {
-                    particle.merge(p);
-                    particles.remove(p);
-                }
-                
-                col.clear();
-            }
+            IParticleState p = particles.get(i).getCurrentState();
+
+            mtotal += p.mass();
+            mx += (p.mass() * p.position().getX());
+            my += (p.mass() * p.position().getY());
+            mz += (p.mass() * p.position().getZ());
         }
+
+        return new Vector3((mx / mtotal), (my / mtotal), (mz / mtotal));
     }
 
     // **** GET / SET METHODS **********************
@@ -105,10 +125,10 @@ public class Universe {
     public double getBoundRadius() {
         return boundRadius;
     }
-    
+
     public double getTotalTime() {
         return totalTime;
     }
-    
+
     // **** END OF GET / SET METHODS ***************
 }

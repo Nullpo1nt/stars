@@ -1,147 +1,150 @@
 package stars.physics.particles;
 
-import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
-import stars.physics.Vector1x3;
-import stars.physics.actions.IForce;
-import stars.physics.actions.NewtonianGravity;
+import stars.math.Vector3;
+import stars.physics.forces.IForce;
+import stars.physics.forces.NewtonianGravity;
 
 public class TestParticle implements IParticle {
-    private boolean _destroy = false;
+    private static final AtomicLong idCount  = new AtomicLong(0L);
+    private final long              _id;
 
-    private Vector1x3 _position;
-    private Vector1x3 _velocity;
-    private double _mass;
-    private double _radius;
-    
-    public Vector1x3 accel;
-    
-    private double density = 5515; // kg/m^3
-    
-    private IForce[] _forces;
-    
-    private ArrayList<IParticle> _collisions;
+    private boolean                 _destroy = false;
+
+    private ParticleState           _currentState;
+    private ParticleState           _nextState;
+
+    private IForce[]                _forces;
+
+    private final double            density;
 
     public TestParticle() {
-        _position = new Vector1x3();
-        _velocity = new Vector1x3();
-
+        _id = idCount.getAndIncrement();
         _forces = new IForce[1];
         _forces[0] = new NewtonianGravity();
-        
-        _collisions = new ArrayList<>();
+
+        // density = 5515d; // kg/m^3 (Earth)
+        density = 8e16d; // kg/m^3 (Neutron Star (low estimate))
     }
 
-    @Override
     public double mass() {
-        return _mass;
+        return _currentState.mass();
     }
-    
+
+    public Vector3 velocity() {
+        return _currentState.velocity();
+    }
+
+    @Override
     public double radius() {
-        return _radius;
+        return _currentState.radius();
     }
 
     @Override
-    public Vector1x3 position() {
-        return _position;
+    public Vector3 position() {
+        return _currentState.position();
     }
 
-    @Override
-    public Vector1x3 velocity() {
-        return _velocity;
-    }
-
-    @Override
-    public void calculate(IParticle p, double tDelta) {
+    public void resetForces() {
         for (IForce f : _forces) {
-            f.calculate(this, p, tDelta);
+            f.reset();
         }
     }
 
     @Override
-    public void update(double time) {
-        Vector1x3 force = new Vector1x3();
-
-        for (IForce action : _forces) {
-            force.add(action.getForce());
-            action.resetForce();
+    public void calculateForces(IParticle p) {
+        for (IForce force : _forces) {
+            force.calculate(getCurrentState(), p.getCurrentState());
         }
-
-        // Scale to acceleration
-        force.scale(1 / _mass);
-
-        accel = new Vector1x3(force);
-        
-        // Scale to velocity
-        force.scale(time);
-        _velocity.add(force);
-
-        // Update position
-        Vector1x3 tempVelocity = new Vector1x3(_velocity);
-        tempVelocity.scale(time);
-        _position.add(tempVelocity);
     }
 
     @Override
+    public void update(double timeDelta) {
+        // Euler Method...
+        Vector3 a = new Vector3();
+
+        for (IForce force : _forces) {
+            a.add(force.getAcceleration());
+        }
+
+        // Calculate new velocity using acceleration
+        Vector3 v = new Vector3(a).scale(timeDelta).add(velocity());
+
+        // Calculate new position from velocity
+        Vector3 p = new Vector3(v).scale(timeDelta).add(
+                _currentState.position());
+
+        _nextState.set(_id, timeDelta, _currentState.mass(),
+                _currentState.radius(), p, v, a);
+
+        switchStates(_nextState);
+
+        resetForces();
+    }
+
+    private void switchStates(ParticleState next) {
+        _nextState = _currentState;
+        _currentState = next;
+    }
+
+    // @Override
     public IForce[] getForces() {
         return _forces;
     }
-    
+
     @Override
     public void markForDeletion() {
         _destroy = true;
     }
-    
+
     public boolean isMarkedForDeletion() {
         return _destroy;
     }
 
     public String toString() {
-        return "mass = " + _mass + " kg" + ", radius = " + _radius + "m, density = " + density + "kg/m^3, "
-                + "\n\t p = " + _position.toString() + " m"
-                + ",\n\t v = " + _velocity.toString() + " m/s";
+        return "p" + _id + "(" + _currentState.toString() + ")";
     }
-    
+
+    /**
+     * Calculates the radius of a perfect sphere for a given mass and density.
+     * 
+     * r = (3m / 4PId)^(1/3)
+     * 
+     * @param mass
+     *            (kg)
+     * @param density
+     *            (kg/m^3)
+     * @return radius (m)
+     */
+    private double massDensityToRadius(double mass, double density) {
+        return Math.pow((mass * 3) / (density * 4 * Math.PI), 1d / 3d);
+    }
+
     @Override
     public void randomize(double massBound, double positionBound,
             double velocityBound) {
-        
-        _mass = Math.random() * massBound;
-        _radius = Math.pow((_mass * 3) / (density * 4 * Math.PI), 1d/3d);
-        
-        _position.setRandom(positionBound);
-        _velocity.setRandom(velocityBound);
+        double mass = Math.random() * massBound;
+        double radius = massDensityToRadius(mass, density);
+
+        _currentState = new ParticleState(_id, 0L, mass, radius,
+                new Vector3().setRandom(positionBound),
+                new Vector3().setRandom(velocityBound), new Vector3());
+        _nextState = new ParticleState(_currentState);
     }
 
     @Override
-    public void addCollision(IParticle p) {
-        _collisions.add(p);
+    public void merge(IParticleState ps) {
+        setCurrentState(getCurrentState().merge(ps));
     }
 
     @Override
-    public ArrayList<IParticle> getCollisions() {
-        return _collisions;
+    public IParticleState getCurrentState() {
+        return _currentState;
     }
 
     @Override
-    public void merge(IParticle p) {
-        
-        double tmass = _mass + p.mass();
-        
-        _velocity.scale(_mass / tmass);
-        p.velocity().scale(p.mass() / tmass);
-        _velocity.add(p.velocity());
-
-        //double oldM = _mass;
-        
-        _mass += p.mass();
-        
-        double area = (Math.PI * Math.pow(p.radius(),2)) + 
-                (Math.PI * Math.pow(_radius, 2));
-        
-        _radius = Math.sqrt(area / Math.PI);
-        //_radius += p.radius();
-        
-
+    public void setCurrentState(IParticleState state) {
+        _currentState = (ParticleState) state;
     }
 }
