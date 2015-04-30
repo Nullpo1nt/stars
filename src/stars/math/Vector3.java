@@ -230,7 +230,7 @@ public class Vector3 implements Cloneable, Tuple3 {
         return new Vector2(x * scale, y * scale);
     }
 
-    public Object clone() {
+    public Vector3 clone() {
         return new Vector3(this);
     }
 
