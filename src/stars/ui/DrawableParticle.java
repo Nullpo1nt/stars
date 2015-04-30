@@ -3,94 +3,100 @@ package stars.ui;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.AbstractCollection;
+import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import stars.physics.Vector1x3;
+import stars.math.Tuple3;
+import stars.math.Vector3;
 import stars.physics.particles.IParticle;
-import stars.physics.particles.TestParticle;
+import stars.physics.particles.IParticleState;
 
 public class DrawableParticle {
-    boolean _drawTail = false, 
-            _drawVelocity = false, 
-            _drawAccel = true,
-            _drawRadius = true;
-    
-    int _maxTailSize = 100;
+    boolean                             _drawTail     = false;
+    boolean                             _drawVelocity = true;
+    boolean                             _drawAccel    = false;
+    boolean                             _drawRadius   = true;
 
-    Hashtable<IParticle,LinkedList<Vector1x3>> particleReg = new Hashtable<IParticle, LinkedList<Vector1x3>>();
-    
+    int                                 _maxTailSize  = 100;
+
+    Hashtable<Long, LinkedList<Tuple3>> particleReg   = new Hashtable<Long, LinkedList<Tuple3>>();
 
     public DrawableParticle() {
     }
 
-    protected LinkedList<Vector1x3> getTail(IParticle particle) {
-        LinkedList<Vector1x3> tail = particleReg.get(particle);
+    protected LinkedList<Tuple3> getTail(IParticleState particle) {
+        LinkedList<Tuple3> tail = particleReg.get(particle);
 
         if (tail == null) {
             tail = new LinkedList<>();
-            particleReg.put(particle, tail);
+            particleReg.put(particle.particleId(), tail);
         }
 
         return tail;
     }
-    
+
     int _width;
     int _height;
-    
-    public void draw(Graphics2D g, int width, int height, double scale, 
+
+    public void draw(Graphics2D g, int width, int height, double scale,
             AbstractCollection<IParticle> particles) {
         _width = width;
         _height = height;
-        
-        for (IParticle particle : particles) {
-            draw(g, scale, particle);
+
+        try {
+            for (IParticle particle : particles) {
+                draw(g, scale, particle.getCurrentState());
+            }
+        } catch (ConcurrentModificationException e) {
+            System.out
+                    .println("Opps: Someone modified the particle list while rendering");
         }
-        
-//        // Prune tail collection
-//        for (LinkedList<Vector1x3> tail : particleReg.values()) {
-//            if (tail.size() > _maxTailSize) {
-//                tail.removeFirst();
-//                
-//            }
-//        }
+
+        // // Prune tail collection
+        // for (LinkedList<Vector1x3> tail : particleReg.values()) {
+        // if (tail.size() > _maxTailSize) {
+        // tail.removeFirst();
+        //
+        // }
+        // }
     }
-    
-    Vector1x3 target = new Vector1x3();
-    
+
+    Tuple3 target = new Vector3();
+
     private int scaleX(double x, double z, double scale) {
-        return (int)((x - target.x) * scale) + (_width / 2);
+        return (int) ((x - target.getX()) * scale) + (_width / 2);
     }
-    
+
     private int scaleY(double y, double z, double scale) {
-        return (int)((y - target.y) * scale) + (_height / 2);
+        return (int) ((y - target.getY()) * scale) + (_height / 2);
     }
-    
-    public void draw(Graphics2D g, double scale, IParticle particle) {
-        LinkedList<Vector1x3> tail = getTail(particle);
-        
-        Vector1x3 position = particle.position();
-        int x = scaleX(position.x, position.z, scale); 
-        int y = scaleY(position.y, position.z, scale);
+
+    public void draw(Graphics2D g, double scale, IParticleState particle) {
+        Vector3 position = particle.position();
+        int x = scaleX(position.getX(), position.getZ(), scale);
+        int y = scaleY(position.getY(), position.getZ(), scale);
 
         if (_drawTail) {
             float colorInc = 128 / (float) _maxTailSize;
             float color = colorInc;
 
-            tail.add(new Vector1x3(position));
+            LinkedList<Tuple3> tail = getTail(particle);
+
+            tail.add(new Vector3(position));
             if (tail.size() > _maxTailSize) {
                 tail.removeFirst();
             }
 
-            Iterator<Vector1x3> i = tail.iterator();
-            Vector1x3 start = null, end = null;
+            Iterator<Tuple3> i = tail.iterator();
+            Tuple3 start = null, end = null;
             while (i.hasNext()) {
                 start = i.next();
                 if (end != null) {
                     g.setColor(new Color((int) color, (int) color, (int) color));
-                    g.drawLine((int) (start.x), (int) (start.y), (int) (end.x),
-                            (int) (end.y));
+                    g.drawLine((int) (start.getX()), (int) (start.getY()),
+                            (int) (end.getX()), (int) (end.getY()));
                 }
                 end = start;
                 color += colorInc;
@@ -99,26 +105,36 @@ public class DrawableParticle {
 
         if (_drawVelocity) {
             g.setColor(Color.GREEN);
-            g.drawLine(x, y, x + (int) (particle.velocity().x), y
-                    + (int) (particle.velocity().y));
+            g.drawLine(x, y, x
+                    + (int) (particle.velocity().getX() * (scale * 2)), y
+                    + (int) (particle.velocity().getY() * (scale * 2)));
         }
 
-         if (_drawAccel) {
-             g.setColor(Color.MAGENTA);
-             g.drawLine(x,y,x+(int)(((TestParticle)particle).accel.x *
-                     10000d),y+(int)(((TestParticle)particle).accel.y * 10000d));
-         }
+        if (_drawAccel) {
+            g.setColor(Color.MAGENTA);
+            g.drawLine(
+                    x,
+                    y,
+                    x
+                            + (int) (particle.acceleration().getX() * (320000d * scale)),
+                    y
+                            + (int) (particle.acceleration().getY() * (320000d * scale)));
+        }
 
         if (_drawRadius) {
-            g.setColor(Color.WHITE);
-            
-            int radius = (int)(particle.radius() * scale);
-            //int radius = (int) ((Math.abs(particle.position().z + 1e6d) / 1e12) * particle.radius()*2);
+            float color = Math.min(1f, Math.max(0f,
+                    (float) ((position.getZ() + 1000000d) / 2000000d)));
+            g.setColor(new Color(color, color, color));
+
+            int radius = (int) (particle.radius() * scale);
+            // int radius = (int) ((Math.abs(particle.position().getZ() + 1e6d)
+            // /
+            // 1e12) * particle.radius()*2);
             int diameter = (radius * 2);
             g.drawOval(x - radius, y - radius, diameter, diameter);
         }
 
-        g.setColor(Color.WHITE);
-        g.drawLine(x, y, x, y);
+        // g.setColor(Color.WHITE);
+        // g.drawLine(x, y, x, y);
     }
 }
