@@ -6,19 +6,28 @@ import stars.physics.particles.IParticle;
 
 public class ParticleGenerator {
     private Class<? extends IParticle> _aClass;
-    
-    private int _maxParticles;
-    private int _maxGenerationRate;
 
-    public double weightLimit = 1e18d;
-    public double positionLimit = 1e6d;  // x2
-    public double velocityLimit = 100d;
-    
+    private int                        _maxParticles;
+    private int                        _maxGenerationRate;
+
+    public double                      weightLimit;
+    public double                      positionLimit;
+    public double                      velocityLimit;
+
     public ParticleGenerator(Class<? extends IParticle> particleClass,
-            int maxParticles, int maxRate) {
+            int maxParticles, int maxRate, double weightLimit,
+            double positionLimit, double velocityLimit) {
         _aClass = particleClass;
         _maxParticles = maxParticles;
         _maxGenerationRate = maxRate;
+        this.weightLimit = weightLimit;
+        this.positionLimit = positionLimit;
+        this.velocityLimit = velocityLimit;
+    }
+
+    public ParticleGenerator(Class<? extends IParticle> particleClass,
+            int maxParticles, int maxRate) {
+        this(particleClass, maxParticles, maxRate, 1e20d, 1e6d, 100d);
     }
 
     public void execute(double step, AbstractList<IParticle> c) {
@@ -39,7 +48,7 @@ public class ParticleGenerator {
 
     public IParticle randomizeParticle(IParticle p) {
         p.randomize(weightLimit, positionLimit, velocityLimit);
-        
+
         return p;
     }
 }
