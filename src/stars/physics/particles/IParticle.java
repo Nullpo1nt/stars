@@ -1,33 +1,31 @@
 package stars.physics.particles;
 
-import java.util.ArrayList;
+import stars.math.Vector3;
 
-import stars.physics.Vector1x3;
-import stars.physics.actions.IForce;
-
+/**
+ * A particle representation for a given position.
+ */
 public interface IParticle extends Cloneable {
+    IParticleState getCurrentState();
+
+    void setCurrentState(IParticleState state);
+
     // Properties
-    public double mass();
+    Vector3 position();
 
-    public Vector1x3 position();
-
-    public Vector1x3 velocity();
-    
-    public double radius();
+    // Vector1x3 velocity();
+    double radius();
 
     // Functions
-    public void calculate(IParticle p, double tDelta);
+    void calculateForces(IParticle p);
 
-    public void update(double time);
+    void update(double time);
 
-    public IForce[] getForces();
+    void markForDeletion();
 
-    public void markForDeletion();
-    public boolean isMarkedForDeletion();
-    
-    public void addCollision(IParticle p);
-    public ArrayList<IParticle> getCollisions();
-    public void merge(IParticle p);
-    
-    public void randomize(double massBound, double positionBound, double velocityBound);
+    boolean isMarkedForDeletion();
+
+    void merge(IParticleState p);
+
+    void randomize(double massBound, double positionBound, double velocityBound);
 }

@@ -6,17 +6,28 @@ import stars.math.Vector3;
  * Instantaneous state of a particle.
  */
 public class ParticleState implements IParticleState {
-    private final long    id;
-    private final double  time;           // s
+    private long    id;
+    private double  time;        // s
 
-    private final double  mass;           // kg
-    private final double  radius;         // m
+    private double  mass;        // kg
+    private double  radius;      // m
 
-    private final Vector3 position;       // m
-    private final Vector3 velocity;       // m/s
-    private final Vector3 acceleration;   // m/s^2
+    private Vector3 position;    // m
+    private Vector3 velocity;    // m/s
+    private Vector3 acceleration; // m/s^2
+
+    public ParticleState(IParticleState state) {
+        set(state.particleId(), 0d, state.mass(), state.radius(), state
+                .position().clone(), state.velocity().clone(), state
+                .acceleration().clone());
+    }
 
     public ParticleState(long id, double t, double m, double r, Vector3 p,
+            Vector3 v, Vector3 a) {
+        set(id, t, m, r, p, v, a);
+    }
+
+    public void set(long id, double t, double m, double r, Vector3 p,
             Vector3 v, Vector3 a) {
         this.id = id;
         time = t;
@@ -25,11 +36,6 @@ public class ParticleState implements IParticleState {
         position = p;
         velocity = v;
         acceleration = a;
-    }
-
-    @Override
-    public long particleId() {
-        return id;
     }
 
     public double time() {
@@ -86,6 +92,11 @@ public class ParticleState implements IParticleState {
                 + ", p=" + position.toString() + " m" + ", v="
                 + velocity.toString() + " m/s" + ", a="
                 + acceleration.toString() + " m/s^2";
+    }
+
+    @Override
+    public long particleId() {
+        return id;
     }
 
 }
