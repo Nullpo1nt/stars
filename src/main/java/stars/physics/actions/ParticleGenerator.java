@@ -27,7 +27,7 @@ public class ParticleGenerator {
 
     public ParticleGenerator(Class<? extends IParticle> particleClass,
             int maxParticles, int maxRate) {
-        this(particleClass, maxParticles, maxRate, 1e20d, 1e6d, 100d);
+        this(particleClass, maxParticles, maxRate, 1e20d, 1e7d, 1000d);
     }
 
     public void execute(double step, AbstractList<IParticle> c) {

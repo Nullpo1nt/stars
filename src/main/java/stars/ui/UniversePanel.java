@@ -14,6 +14,8 @@ import javax.swing.JPanel;
 import stars.UniverseMediator;
 import stars.math.Tuple3;
 import stars.physics.Universe;
+import stars.physics.nbody.space.TreeSpace;
+import stars.ui.space.TreeSpaceRenderer;
 
 @SuppressWarnings("serial")
 public class UniversePanel extends JPanel implements MouseListener,
@@ -37,6 +39,7 @@ public class UniversePanel extends JPanel implements MouseListener,
     protected int                   _xOffset         = 0, _yOffset = 0;
 
     private static DrawableParticle particleRenderer = new DrawableParticle();
+    private ISpaceRenderer spaceRenderer;
 
     public UniversePanel(UniverseMediator um, Universe u) {
         _drawableUniverse = um;
@@ -80,6 +83,8 @@ public class UniversePanel extends JPanel implements MouseListener,
     }
 
     protected void draw(Graphics2D g, int width, int height) {
+        GraphicsWrapper gw = new GraphicsWrapper(g, width, height, _scale);
+
         g.setColor(Color.BLACK);
         g.fillRect(1, 1, width, height);
 
@@ -159,6 +164,9 @@ public class UniversePanel extends JPanel implements MouseListener,
                     (int) (com.getX() * _scale) + 20 + w,
                     (int) (com.getY() * _scale) + h);
         }
+        
+        spaceRenderer = new TreeSpaceRenderer((TreeSpace) universe.getSpace());
+        spaceRenderer.draw(gw);
     }
 
     @Override

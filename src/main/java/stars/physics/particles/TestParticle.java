@@ -128,8 +128,8 @@ public class TestParticle implements IParticle {
         double radius = massDensityToRadius(mass, density);
 
         _currentState = new ParticleState(_id, 0L, mass, radius,
-                new Vector3().setRandom(positionBound),
-                new Vector3().setRandom(velocityBound), new Vector3());
+                new Vector3().setRandomRadius(positionBound),
+                new Vector3().setRandomRadius(velocityBound), new Vector3());
         _nextState = new ParticleState(_currentState);
     }
 

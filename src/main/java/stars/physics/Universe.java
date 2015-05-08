@@ -7,6 +7,8 @@ import stars.math.Tuple3;
 import stars.math.Vector3;
 import stars.physics.nbody.solver.BruteForceSolver;
 import stars.physics.nbody.solver.NBodySolver;
+import stars.physics.nbody.space.SpaceStrategy;
+import stars.physics.nbody.space.TreeSpace;
 import stars.physics.particles.IParticle;
 import stars.physics.particles.IParticleState;
 
@@ -17,6 +19,7 @@ public class Universe {
     public static final double        G             = 6.67e-11;
 
     protected AbstractList<IParticle> particles;
+    private SpaceStrategy             space;
     private NBodySolver               solver;
 
     protected double                  step          = 0.00001d;
@@ -29,7 +32,7 @@ public class Universe {
     public Tuple3                     centerOfMass  = new Vector3();
 
     public Universe() {
-        this(new Vector<IParticle>(), new BruteForceSolver());
+        this(new Vector<IParticle>(), new TreeSpace(50), new BruteForceSolver());
     }
 
     /**
@@ -38,8 +41,10 @@ public class Universe {
      * @param c1
      * @param c2
      */
-    public Universe(AbstractList<IParticle> c1, NBodySolver s1) {
+    public Universe(AbstractList<IParticle> c1, SpaceStrategy sp1,
+            NBodySolver s1) {
         particles = c1;
+        space = sp1;
         solver = s1;
     }
 
@@ -48,7 +53,7 @@ public class Universe {
 
         totalTime += step;
 
-        solver.solve(particles, step);
+        space.processSpace(particles, step, solver);
 
         for (int i = 0; i < particles.size(); i++) {
             IParticle particle = particles.get(i);
@@ -63,16 +68,16 @@ public class Universe {
                 }
             }
 
-//            ArrayList<IParticle> col = particle.getCollisions();
-//
-//            if (col.size() > 0) {
-//                for (IParticle p : col) {
-//                    particle.merge(p.getCurrentState());
-//                    particles.remove(p);
-//                }
-//
-//                col.clear();
-//            }
+            // ArrayList<IParticle> col = particle.getCollisions();
+            //
+            // if (col.size() > 0) {
+            // for (IParticle p : col) {
+            // particle.merge(p.getCurrentState());
+            // particles.remove(p);
+            // }
+            //
+            // col.clear();
+            // }
         }
 
         centerOfMass = calculateCenterOfMass(particles);
@@ -128,6 +133,10 @@ public class Universe {
 
     public double getTotalTime() {
         return totalTime;
+    }
+    
+    public SpaceStrategy getSpace() {
+        return space;
     }
 
     // **** END OF GET / SET METHODS ***************

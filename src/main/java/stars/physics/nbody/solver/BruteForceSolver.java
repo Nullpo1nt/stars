@@ -28,14 +28,14 @@ public class BruteForceSolver implements NBodySolver {
             p2.calculateForces(p1);
 
             // FIXME Collision detection doesn't belong here...
-//            double dis = Math.abs(p1.position().getDistance(p2.position()));
-//
-//            if (dis <= p1.radius() || dis <= p2.radius()) {
-//                // p1.addCollision(p2);
-//                System.out.println("Collision between:\n\tP1 " + p1 + "\n\tP2 "
-//                        + p2);
-//                System.out.println(dis);
-//            }
+            // double dis = Math.abs(p1.position().getDistance(p2.position()));
+            //
+            // if (dis <= p1.radius() || dis <= p2.radius()) {
+            // // p1.addCollision(p2);
+            // System.out.println("Collision between:\n\tP1 " + p1 + "\n\tP2 "
+            // + p2);
+            // System.out.println(dis);
+            // }
         }
     }
 }

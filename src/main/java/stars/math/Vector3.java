@@ -57,7 +57,8 @@ public class Vector3 implements Cloneable, Tuple3 {
      * Sets each vector component to a random value between the range of
      * [-scale, scale].
      * 
-     * @param double d - The scale component
+     * @param d
+     *            The scale component
      */
     public Vector3 setRandom(double d) {
         double doubleScale = d * 2;
@@ -67,6 +68,26 @@ public class Vector3 implements Cloneable, Tuple3 {
         z = (Math.random() * doubleScale) - d;
 
         return this;
+    }
+
+    /**
+     * Sets a vector point in a random position on a sphere of random radius
+     * based at 0,0,0.
+     * 
+     * @param maxRadius
+     *            Maximum radius value.
+     * @return Vector3
+     */
+    public Vector3 setRandomRadius(double maxRadius) {
+        double theta = Math.random() * Math.PI * 2;  // 0-2pi
+        // The following ensures an equal distribution of points on a sphere
+        // http://mathworld.wolfram.com/SpherePointPicking.html
+        double phi = Math.acos((2 * Math.random()) - 1); //0-pi
+        double radius = Math.random() * maxRadius;
+
+        return new Vector3(radius * Math.cos(theta) * Math.sin(phi), radius
+                * Math.sin(theta) * Math.sin(phi), radius * Math.cos(phi));
+
     }
 
     /**

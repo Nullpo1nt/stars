@@ -75,7 +75,7 @@ public class UniverseMediator implements Runnable {
 
     public void toggleGenerator() {
         if (generator == null) {
-            generator = new ParticleGenerator(TestParticle.class, 100, 100);
+            generator = new ParticleGenerator(TestParticle.class, 1000, 1000);
         } else {
             generator = null;
         }
