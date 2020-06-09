@@ -1,19 +1,19 @@
 package stars.physics.actions;
 
+import stars.math.Vector3;
 import stars.physics.Universe;
-import stars.physics.Vector1x3;
 import stars.physics.particles.IParticle;
 
 public class NewtonianGravity implements IForce {
-    Vector1x3 force = new Vector1x3();
+    Vector3 force = new Vector3();
 
     @Override
     public void calculate(IParticle p1, IParticle p2, double tDelta) {
         // F = G * (m1 * m2) / d^2
-        Vector1x3 distanceV = p1.position().getDistanceVector(p2.position());
-        Vector1x3 unitV = distanceV.getUnitVector();
+        Vector3 distanceV = p1.getCurrentState().position().getDistanceVector(p2.position());
+        Vector3 unitV = distanceV.getUnitVector();
         double distance = distanceV.getMagnitude();
-        double massProduct = p1.mass() * p2.mass();
+        double massProduct = p1.getCurrentState().mass() * p2.getCurrentState().mass();
         double force = (Universe.G * massProduct) / (distance * distance);
         unitV.scale(force);
 
@@ -26,7 +26,7 @@ public class NewtonianGravity implements IForce {
     }
 
     @Override
-    public Vector1x3 getForce() {
+    public Vector3 getForce() {
         return force;
     }
 
