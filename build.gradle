@@ -9,25 +9,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
-sourceSets {
-    main {
-        java {
-            exclude 'stars/physics/Vector1x3Gen.java',
-                    'stars/physics/actions/Attraction.java',
-                    'stars/physics/actions/BounceBoundry.java',
-                    'stars/physics/actions/BounceBoundryEliptical.java',
-                    'stars/physics/actions/Boundry.java',
-                    'stars/physics/actions/Gravity.java',
-                    'stars/physics/particles/Blackhole.java',
-                    'stars/physics/particles/IntegralParticle.java',
-                    'stars/physics/particles/NewtonParticle.java',
-                    'stars/physics/particles/OscillatingParticle.java',
-                    'stars/physics/particles/PlanetParticle.java',
-                    'stars/physics/actions/ParticleCollision.java'
-        }
-    }
-}
-
 application {
     mainClass = 'stars.Stars'
 }
