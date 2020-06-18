@@ -14,7 +14,6 @@ public class BruteForceSolver implements NBodySolver {
             IParticle p = particleList.get(i);
 
             update(particleList, p, i + 1, length);
-
             p.update(timeDelta);
         }
     }
@@ -26,16 +25,6 @@ public class BruteForceSolver implements NBodySolver {
 
             p1.calculateForces(p2);
             p2.calculateForces(p1);
-
-            // FIXME Collision detection doesn't belong here...
-            // double dis = Math.abs(p1.position().getDistance(p2.position()));
-            //
-            // if (dis <= p1.radius() || dis <= p2.radius()) {
-            // // p1.addCollision(p2);
-            // System.out.println("Collision between:\n\tP1 " + p1 + "\n\tP2 "
-            // + p2);
-            // System.out.println(dis);
-            // }
         }
     }
 }

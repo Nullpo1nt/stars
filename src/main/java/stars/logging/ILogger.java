@@ -1,7 +1,5 @@
 package stars.logging;
 
-import stars.logging.LogEntry;
-
 public interface ILogger {
     /**
      * Log a message.

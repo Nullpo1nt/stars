@@ -89,13 +89,12 @@ public class Universe {
         double mz = 0d;
         double mtotal = 0d;
 
-        for (int i = 0; i < particles.size(); i++) {
-            IParticleState p = particles.get(i).getCurrentState();
-
-            mtotal += p.mass();
-            mx += (p.mass() * p.position().getX());
-            my += (p.mass() * p.position().getY());
-            mz += (p.mass() * p.position().getZ());
+        for (IParticle p : particles) {
+            double mass = p.getCurrentState().mass();
+            mtotal += mass;
+            mx += (mass * p.position().getX());
+            my += (mass * p.position().getY());
+            mz += (mass * p.position().getZ());
         }
 
         return new Vector3((mx / mtotal), (my / mtotal), (mz / mtotal));
