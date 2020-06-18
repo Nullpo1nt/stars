@@ -117,59 +117,23 @@ public class UniversePanel extends JPanel implements MouseListener,
             g.drawChars(c, 0, c.length, 400, 15);
         }
 
-        // These need to be scaled
-        // -------------------------------
-
-        if (_drawParticles) {
-            particleRenderer.draw(g, width, height, _scale,
-                    universe.getParticles());
-        }
-
         if (_drawBoundRadius) {
-            // double radius = universe.getBoundRadius();
-            // double diameter = 2 * radius;
-            // double negRadius = -1 * radius;
-            //
-            // g.setColor(new Color(1.0f, 0f, 0f));
-            // g.drawRect((int) negRadius, (int) negRadius, (int) diameter,
-            // (int) diameter);
-            // g.setColor(new Color(0.5f, 0f, 0f));
-            // g.drawOval((int) negRadius + 50, (int) negRadius + 50,
-            // (int) diameter - 100, (int) diameter - 100);
+            g.setColor(new Color(0.5f, 0f, 0f));
+            gw.drawCircle(0, 0, universe.getBoundRadius());
         }
 
-        if (_drawRings) {
-            // g.setColor(new Color(0.125f, 0.125f, 0.125f));
-            // g.drawOval((-5000), (-5000), (10000), (10000));
-            //
-            // g.setColor(new Color(0.20f, 0.20f, 0.20f));
-            // g.drawOval((-2500), (-2500), (5000), (5000));
-            //
-            // g.drawLine(0, -5000, 0, 5000);
-            // g.drawLine(-5000, 0, 5000, 0);
-            //
-            // g.setColor(new Color(0.3f, 0.3f, 0.3f));
-            // g.drawOval((-1250), (-1250), (2500), (2500));
-        }
-
-        if (_drawCoM) {
+        if (_drawCoM && !universe.getParticles().isEmpty()) {
+            g.setColor(Color.BLUE);
             CenterOfMass com = CenterOfMass.calculate(universe.getParticles());
-            int w = (width / 2);
-            int h = (height / 2);
-            g.setColor(Color.GRAY);
-            g.drawLine((int) (com.getX() * _scale) + w,
-                    (int) (com.getY() * _scale) - 20 + h,
-                    (int) (com.getX() * _scale) + w,
-                    (int) (com.getY() * _scale) + 20 + h);
-
-            g.drawLine((int) (com.getX() * _scale) - 20 + w,
-                    (int) (com.getY() * _scale) + h,
-                    (int) (com.getX() * _scale) + 20 + w,
-                    (int) (com.getY() * _scale) + h);
+            gw.drawCross(com.getX(), com.getY(), 20);
         }
-        
+
         spaceRenderer = new BarnesHutRenderer((BarnesHut) universe.getSpace());
         spaceRenderer.draw(gw);
+
+        if (_drawParticles) {
+            particleRenderer.draw(gw, universe.getParticles());
+        }
     }
 
     @Override

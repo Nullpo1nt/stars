@@ -29,7 +29,7 @@ public class BarnesHutRenderer implements ISpaceRenderer {
     private void drawNode(GraphicsWrapper g, BarnesHutNode node) {
         if (show && node != null) {
             if (node.isExternal()) {
-                g.g().setColor(Color.GRAY);
+                g.g().setColor(Color.DARK_GRAY);
             } else {
                 for (BarnesHutNode n : node.nodes) {
                     drawNode(g,n);

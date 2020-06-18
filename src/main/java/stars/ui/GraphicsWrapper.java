@@ -98,12 +98,12 @@ public class GraphicsWrapper {
 
     public void drawCircle(double x, double y, double radius) {
         int diameter = scale(radius * 2d);
-        graphics.drawOval(scale(x - radius) + halfWidth, scale(y - radius) + halfHeight, diameter, diameter);
+        graphics.drawOval(scale(x) - scale(radius) + halfWidth, scale(y) - scale(radius) + halfHeight, diameter, diameter);
     }
 
     public void fillCircle(double x, double y, double radius) {
         int diameter = scale(radius * 2d);
-        graphics.fillOval(scale(x - radius) + halfWidth, scale(y - radius) + halfHeight, diameter, diameter);
+        graphics.fillOval(scale(x) - scale(radius) + halfWidth, scale(y) - scale(radius) + halfHeight, diameter, diameter);
     }
 
     public void drawCross(double x, double y, int size) {
