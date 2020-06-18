@@ -14,7 +14,9 @@ import javax.swing.JPanel;
 import stars.UniverseMediator;
 import stars.math.Tuple3;
 import stars.physics.Universe;
+import stars.physics.nbody.space.BarnesHut;
 import stars.physics.nbody.space.TreeSpace;
+import stars.ui.space.BarnesHutRenderer;
 import stars.ui.space.TreeSpaceRenderer;
 
 @SuppressWarnings("serial")
@@ -165,7 +167,7 @@ public class UniversePanel extends JPanel implements MouseListener,
                     (int) (com.getY() * _scale) + h);
         }
         
-        spaceRenderer = new TreeSpaceRenderer((TreeSpace) universe.getSpace());
+        spaceRenderer = new BarnesHutRenderer((BarnesHut) universe.getSpace());
         spaceRenderer.draw(gw);
     }
 

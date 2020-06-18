@@ -7,8 +7,8 @@ import stars.math.Tuple3;
 import stars.math.Vector3;
 import stars.physics.nbody.solver.BruteForceSolver;
 import stars.physics.nbody.solver.NBodySolver;
+import stars.physics.nbody.space.BarnesHut;
 import stars.physics.nbody.space.SpaceStrategy;
-import stars.physics.nbody.space.TreeSpace;
 import stars.physics.particles.IParticle;
 import stars.physics.particles.IParticleState;
 
@@ -32,7 +32,7 @@ public class Universe {
     public Tuple3                     centerOfMass  = new Vector3();
 
     public Universe() {
-        this(new Vector<IParticle>(), new TreeSpace(50), new BruteForceSolver());
+        this(new Vector<IParticle>(), new BarnesHut(50), new BruteForceSolver());
     }
 
     /**
