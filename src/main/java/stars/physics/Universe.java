@@ -3,14 +3,11 @@ package stars.physics;
 import java.util.AbstractList;
 import java.util.Vector;
 
-import stars.math.Tuple3;
-import stars.math.Vector3;
 import stars.physics.nbody.solver.BruteForceSolver;
 import stars.physics.nbody.solver.NBodySolver;
 import stars.physics.nbody.space.BarnesHut;
 import stars.physics.nbody.space.SpaceStrategy;
 import stars.physics.particles.IParticle;
-import stars.physics.particles.IParticleState;
 
 public class Universe {
     /**
@@ -28,8 +25,6 @@ public class Universe {
     protected boolean                 enforceBounds = true;
 
     protected double                  boundRadius   = 1e8d;
-
-    public Tuple3                     centerOfMass  = new Vector3();
 
     public Universe() {
         this(new Vector<IParticle>(), new BarnesHut(50), new BruteForceSolver());
@@ -67,37 +62,7 @@ public class Universe {
                     continue;
                 }
             }
-
-            // ArrayList<IParticle> col = particle.getCollisions();
-            //
-            // if (col.size() > 0) {
-            // for (IParticle p : col) {
-            // particle.merge(p.getCurrentState());
-            // particles.remove(p);
-            // }
-            //
-            // col.clear();
-            // }
         }
-
-        centerOfMass = calculateCenterOfMass(particles);
-    }
-
-    private Tuple3 calculateCenterOfMass(AbstractList<IParticle> particles) {
-        double mx = 0d;
-        double my = 0d;
-        double mz = 0d;
-        double mtotal = 0d;
-
-        for (IParticle p : particles) {
-            double mass = p.getCurrentState().mass();
-            mtotal += mass;
-            mx += (mass * p.position().getX());
-            my += (mass * p.position().getY());
-            mz += (mass * p.position().getZ());
-        }
-
-        return new Vector3((mx / mtotal), (my / mtotal), (mz / mtotal));
     }
 
     // **** GET / SET METHODS **********************

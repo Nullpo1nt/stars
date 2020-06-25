@@ -3,7 +3,7 @@ package stars.physics.nbody.space;
 import java.util.AbstractList;
 import java.util.ArrayList;
 
-import stars.math.Vector3;
+import stars.physics.CenterOfMass;
 import stars.physics.particles.IParticle;
 
 public class BarnesHutNode {
@@ -11,8 +11,7 @@ public class BarnesHutNode {
 
     private Boundary boundary;
 
-    public Vector3 centerOfMass = new Vector3();
-    private double mass = 0d;
+    public CenterOfMass centerOfMass;
 
     ArrayList<IParticle> particles = new ArrayList<>();
 
@@ -25,30 +24,16 @@ public class BarnesHutNode {
     }
 
     private void build(AbstractList<IParticle> source) {
-        double mx = 0;
-        double my = 0;
-        double mz = 0;
-
         for (IParticle p : source) {
-            Vector3 pos = p.getCurrentState().position();
-
-            if (boundary.contains(pos)) {
+            if (boundary.contains(p.position())) {
                 particles.add(p);
-
-                mass += p.getCurrentState().mass();
-                mx += (p.position().getX() * p.getCurrentState().mass());
-                my += (p.position().getY() * p.getCurrentState().mass());
-                mz += (p.position().getZ() * p.getCurrentState().mass());
-
-                continue;
             }
         }
 
         if (particles.size() > 1) {
-            centerOfMass.set(mx, my, mz);
-            centerOfMass.scale(1d / mass);
-
+            centerOfMass = CenterOfMass.calculate(particles);
             nodes = new BarnesHutNode[8];
+
             for (int i = 0; i < nodes.length; i++) {
                 nodes[i] = new BarnesHutNode(boundary.divide(i));
                 nodes[i].build(particles);
@@ -68,7 +53,7 @@ public class BarnesHutNode {
         return particles.size() == 0;
     }
 
-    public void solve(double target, IParticle p) {
+    public void solve(double targetTheta, IParticle p) {
         if (isExternal()) {
             for (IParticle ppp : particles) {
                 if (ppp != p) {
@@ -76,20 +61,27 @@ public class BarnesHutNode {
                 }
             }
         } else {
-            double theta = boundary.getWidthX() / centerOfMass.getDistance(p.getCurrentState().position());
+            double theta = calculateTheta(p);
 
-            if (theta < target) {
-                p.calculateForces(new OctTreeParticle(mass, centerOfMass));
+            if (theta < targetTheta) {
+                p.calculateForces(new OctTreeParticle(centerOfMass.getMass(), centerOfMass));
             } else {
                 for (BarnesHutNode n : nodes) {
-                    n.solve(target, p);
+                    n.solve(targetTheta, p);
                 }
             }
         }
     }
 
+    public double calculateTheta(IParticle p) {
+        return boundary.getWidthX() / centerOfMass.getDistance(p.position());
+    }
+
     public static BarnesHutNode build(AbstractList<IParticle> particles, double boundLow, double boundHigh) {
-        BarnesHutNode node = new BarnesHutNode(new Boundary(boundLow, boundHigh,boundLow, boundHigh,boundLow, boundHigh));
+        BarnesHutNode node = new BarnesHutNode(new Boundary(
+            boundLow, boundHigh, 
+            boundLow, boundHigh, 
+            boundLow, boundHigh));
         node.build(particles);
         return node;
     }

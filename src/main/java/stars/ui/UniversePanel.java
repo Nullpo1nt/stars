@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import stars.UniverseMediator;
 import stars.math.Tuple3;
+import stars.physics.CenterOfMass;
 import stars.physics.Universe;
 import stars.physics.nbody.space.BarnesHut;
 import stars.physics.nbody.space.TreeSpace;
@@ -152,7 +153,7 @@ public class UniversePanel extends JPanel implements MouseListener,
         }
 
         if (_drawCoM) {
-            Tuple3 com = universe.centerOfMass;
+            CenterOfMass com = CenterOfMass.calculate(universe.getParticles());
             int w = (width / 2);
             int h = (height / 2);
             g.setColor(Color.GRAY);
